@@ -32,8 +32,8 @@ public class AdsController {
                 .body(allAds);
     }
 
-    @PostMapping()
-    public ResponseEntity<Ad> addAd(Authentication authentication, @RequestBody @Valid CreateOrUpdateAd properties, @RequestBody MultipartFile image){
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Ad> addAd(Authentication authentication, @RequestBody @Valid CreateOrUpdateAd properties, @RequestPart MultipartFile image){
         Ad addAd = adsService.addAd(authentication, properties, image);
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -75,8 +75,8 @@ public class AdsController {
                 .body(currentUserAds);
     }
 
-    @PatchMapping("/{id}/image")
-    public ResponseEntity<String> updateAdImage(Authentication authentication, @PathVariable(name = "id") Integer id, @RequestBody MultipartFile image){
+    @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> updateAdImage(Authentication authentication, @PathVariable(name = "id") Integer id, @RequestParam MultipartFile image){
         String updateAdImage = adsService.updateAdImage(authentication, id, image);
 
         return ResponseEntity.ok()
