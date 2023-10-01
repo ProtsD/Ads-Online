@@ -8,14 +8,27 @@ import ru.skypro.homework.dto.ads.Ad;
 import ru.skypro.homework.dto.ads.Ads;
 import ru.skypro.homework.dto.ads.CreateOrUpdateAd;
 import ru.skypro.homework.dto.ads.ExtendedAd;
+import ru.skypro.homework.mappers.AdsMapper;
+import ru.skypro.homework.repository.AdsRepository;
 import ru.skypro.homework.service.AdsService;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
 public class AdsServiceImpl implements AdsService {
+    private final AdsRepository adsRepository;
+    private final AdsMapper adsMapper;
+
     @Override
     public Ads getAllAds(Authentication authentication) {
-        return null;
+        List<Ad> adList = StreamSupport.stream(adsRepository.findAll().spliterator(),false)
+                .map(adsMapper::toAd)
+                .collect(Collectors.toList());
+
+        return adsMapper.toAds(adList);
     }
 
     @Override

@@ -16,8 +16,7 @@ public class ExtendedAd {
     private String email;
     private String image;
     private String phone;
-    @Min(0)
-    @Max(10000000)
+    @Min(0) @Max(10000000)
     private int price;
     @Size(min = 4, max = 32)
     private String title;
