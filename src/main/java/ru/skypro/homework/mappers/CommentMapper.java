@@ -25,8 +25,8 @@ public class CommentMapper {
         comment.setText(commentEntity.getText());
         comment.setPk(commentEntity.getPk().getId());
         comment.setCreatedAt(commentEntity.getCreatedAt());
-        comment.setAuthorImage(commentEntity.getAuthorImage().getImage());
-        comment.setAuthorFirstName(commentEntity.getAuthorFirstName().getFirstName());
+        comment.setAuthorImage(commentEntity.getAuthor().getImage());
+        comment.setAuthorFirstName(commentEntity.getAuthor().getFirstName());
         return comment;
     }
     public Comments toComments(List<Comment> commentList){
