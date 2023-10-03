@@ -10,13 +10,13 @@ import javax.persistence.*;
 public class CommentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int pk;
     @Column(name = "createdAt", nullable = false)
     private long createdAt;
     @Column(name = "text", nullable = false)
     private String text;
     @ManyToOne
-    @JoinColumn(name = "ads_pk", referencedColumnName = "pk")
+    @JoinColumn(name = "ad_pk", referencedColumnName = "pk")
     private AdsEntity adsEntity;
     @ManyToOne
     @JoinColumn(name = "user_id",referencedColumnName = "id")
@@ -25,7 +25,7 @@ public class CommentEntity {
     @Override
     public String toString() {
         return "CommentEntity{" +
-                "id=" + id +
+                "id=" + pk +
                 ", createdAt=" + createdAt +
                 ", text='" + text + '\'' +
                 ", author=" + author +
