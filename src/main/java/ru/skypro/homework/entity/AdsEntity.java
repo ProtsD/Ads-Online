@@ -32,6 +32,6 @@ public class AdsEntity {
     private String image;
 
     @ManyToOne
-    @JoinColumn(name = "id",referencedColumnName = "author_id")
+    @JoinColumn(name = "author_id",referencedColumnName = "id")
     private User author;
 }
