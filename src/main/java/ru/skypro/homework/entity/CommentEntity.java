@@ -22,9 +22,6 @@ public class CommentEntity {
     @JoinColumn(name = "user_id",referencedColumnName = "id")
     private User author;
 
-    public CommentEntity() {
-    }
-
     @Override
     public String toString() {
         return "CommentEntity{" +
