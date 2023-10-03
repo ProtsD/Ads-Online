@@ -5,7 +5,7 @@ import lombok.Data;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "`Comment`")
+@Table(name = "`comment`")
 @Data
 public class CommentEntity {
     @Id
@@ -16,10 +16,10 @@ public class CommentEntity {
     @Column(name = "text", nullable = false)
     private String text;
     @ManyToOne
-    @JoinColumn(name = "pk", referencedColumnName = "ads_pk")
+    @JoinColumn(name = "ads_pk", referencedColumnName = "pk")
     private AdsEntity adsEntity;
     @ManyToOne
-    @JoinColumn(name = "id",referencedColumnName = "user_id")
+    @JoinColumn(name = "user_id",referencedColumnName = "id")
     private User author;
 
     public CommentEntity() {
