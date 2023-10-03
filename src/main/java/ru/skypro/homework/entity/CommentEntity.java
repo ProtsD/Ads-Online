@@ -10,7 +10,7 @@ import javax.persistence.*;
 public class CommentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int pk;
+    private Integer pk;
     @Column(name = "createdAt", nullable = false)
     private long createdAt;
     @Column(name = "text", nullable = false)

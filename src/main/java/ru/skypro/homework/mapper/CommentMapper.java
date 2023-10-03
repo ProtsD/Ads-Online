@@ -1,4 +1,4 @@
-package ru.skypro.homework.mappers;
+package ru.skypro.homework.mapper;
 
 import ru.skypro.homework.dto.comment.Comment;
 import ru.skypro.homework.dto.comment.Comments;
