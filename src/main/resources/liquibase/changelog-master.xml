@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
     <changeSet id="changelog-master 001" author="dev"/>
-    <include file="liquibase/init/create_table_user.xml"/>
-    <include file="liquibase/init/create_table_ads.xml"/>
-    <include file="liquibase/init/create_table_comments.xml"/>
+    <include file="liquibase/changesets/231003_create_user.xml"/>
+    <include file="liquibase/changesets/231003_create_ads.xml"/>
+    <include file="liquibase/changesets/231003_create_comments.xml"/>
 </databaseChangeLog>
