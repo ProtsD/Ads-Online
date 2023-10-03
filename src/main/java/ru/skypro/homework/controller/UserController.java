@@ -26,7 +26,7 @@ public class UserController {
 
     @GetMapping("/me")
     public ResponseEntity<?> getData() {
-        User user;
+        User user = null;
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .body(user);
@@ -34,7 +34,7 @@ public class UserController {
 
     @PatchMapping("/me")
     public ResponseEntity<?> updateData(@RequestBody @Valid UpdateUser updateUser) {
-        UpdateUser updateUserReturn;
+        UpdateUser updateUserReturn = null;
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .body(updateUserReturn);
