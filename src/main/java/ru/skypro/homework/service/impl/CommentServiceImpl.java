@@ -2,6 +2,7 @@ package ru.skypro.homework.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Service;
 import ru.skypro.homework.dto.comment.Comment;
 import ru.skypro.homework.dto.comment.Comments;
 import ru.skypro.homework.dto.comment.CreateOrUpdateComment;
@@ -12,7 +13,7 @@ import ru.skypro.homework.service.CommentService;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
+@Service
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
     private CommentMapper commentMapper;

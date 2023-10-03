@@ -7,7 +7,7 @@ import ru.skypro.homework.dto.ads.Ads;
 import ru.skypro.homework.dto.ads.CreateOrUpdateAd;
 import ru.skypro.homework.dto.ads.ExtendedAd;
 
-public interface AdsService {
+public interface AdService {
     Ads getAllAds(Authentication authentication);
     Ad addAd(Authentication authentication, CreateOrUpdateAd properties, MultipartFile image);
     ExtendedAd getAdInfo(Authentication authentication, Integer id);
