@@ -14,20 +14,20 @@ public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(name = "username")
+    @Column(name = "username", nullable = false)
     private String username;
-    @Column(name = "password")
+    @Column(name = "password", nullable = false)
     private String password;
-    @Column(name = "email")
+    @Column(name = "email", nullable = false)
     private String email;
-    @Column(name = "firstName")
+    @Column(name = "firstName", nullable = false)
     private String firstName;
-    @Column(name = "lastName")
+    @Column(name = "lastName", nullable = false)
     private String lastName;
-    @Column(name = "phone")
+    @Column(name = "phone", nullable = false)
     private String phone;
-    @Column(name = "role")
+    @Column(name = "role", nullable = false)
     private Role role;
-    @Column(name = "image")
+    @Column(name = "image", nullable = false)
     private String image;
 }
