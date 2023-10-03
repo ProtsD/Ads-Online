@@ -1,11 +1,13 @@
 package ru.skypro.homework.service.impl;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Service;
 import ru.skypro.homework.dto.comment.Comment;
 import ru.skypro.homework.dto.comment.Comments;
 import ru.skypro.homework.dto.comment.CreateOrUpdateComment;
 import ru.skypro.homework.service.CommentService;
 
+@Service
 public class CommentServiceImpl implements CommentService {
     @Override
     public Comments getAllComments(Authentication authentication,int id) {

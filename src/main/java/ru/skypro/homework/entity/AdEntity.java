@@ -1,6 +1,7 @@
 package ru.skypro.homework.entity;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import javax.validation.constraints.Max;
@@ -10,7 +11,8 @@ import javax.validation.constraints.Size;
 @Entity
 @Data
 @Table(name = "ads")
-public class AdsEntity {
+@Accessors(chain = true)
+public class AdEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "pk", nullable = false)
@@ -33,5 +35,5 @@ public class AdsEntity {
 
     @ManyToOne
     @JoinColumn(name = "author_id",referencedColumnName = "id")
-    private User author;
+    private UserEntity author;
 }
