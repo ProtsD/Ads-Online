@@ -1,6 +1,7 @@
 package ru.skypro.homework.entity;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 import ru.skypro.homework.dto.user.Role;
 
 import javax.persistence.*;
@@ -8,10 +9,11 @@ import javax.persistence.*;
 @Entity
 @Table(name = "`user`")
 @Data
-public class User {
+@Accessors(chain = true)
+public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
     @Column(name = "username")
     private String username;
     @Column(name = "password")
