@@ -13,15 +13,17 @@ import ru.skypro.homework.service.CommentService;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+
 @Service
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
-    private CommentMapper commentMapper;
-    private CommentRepository commentRepository;
+    private final CommentMapper commentMapper;
+    private final CommentRepository commentRepository;
+
     @Override
-    public Comments getAllComments(Authentication authentication,int id) {
-        List<Comment> commentList= StreamSupport.stream(commentRepository.findAll().spliterator(),false)
-                .filter(n -> n.getAdsEntity().getId()==id)
+    public Comments getAllComments(Authentication authentication, int id) { // временное решение
+        List<Comment> commentList = StreamSupport.stream(commentRepository.findAll().spliterator(), false)
+                .filter(n -> n.getAdsEntity().getPk() == id)
                 .map(commentMapper::toComment)
                 .collect(Collectors.toList());
         return commentMapper.toComments(commentList);
@@ -33,12 +35,12 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void deleteComment(Authentication authentication,int adId, int commentId) {
+    public void deleteComment(Authentication authentication, int adId, int commentId) {
 
     }
 
     @Override
-    public Comment updateComment(Authentication authentication,int adId, int commentId, CreateOrUpdateComment createOrUpdateComment) {
+    public Comment updateComment(Authentication authentication, int adId, int commentId, CreateOrUpdateComment createOrUpdateComment) {
         return null;
     }
 }

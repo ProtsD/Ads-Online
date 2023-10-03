@@ -1,12 +1,14 @@
 package ru.skypro.homework.entity;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "`comment`")
 @Data
+@Accessors(chain = true)
 public class CommentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,18 +19,8 @@ public class CommentEntity {
     private String text;
     @ManyToOne
     @JoinColumn(name = "ad_pk", referencedColumnName = "pk")
-    private AdsEntity adsEntity;
+    private AdEntity adsEntity;
     @ManyToOne
     @JoinColumn(name = "user_id",referencedColumnName = "id")
-    private User author;
-
-    @Override
-    public String toString() {
-        return "CommentEntity{" +
-                "id=" + pk +
-                ", createdAt=" + createdAt +
-                ", text='" + text + '\'' +
-                ", author=" + author +
-                '}';
-    }
+    private UserEntity author;
 }
