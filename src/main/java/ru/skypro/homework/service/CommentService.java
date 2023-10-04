@@ -6,7 +6,6 @@ import ru.skypro.homework.dto.comment.Comment;
 import ru.skypro.homework.dto.comment.Comments;
 import ru.skypro.homework.dto.comment.CreateOrUpdateComment;
 
-@Service
 public interface CommentService {
     Comments getAllComments(Authentication authentication,int id);
 

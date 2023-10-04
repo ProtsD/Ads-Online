@@ -12,20 +12,20 @@ import ru.skypro.homework.dto.ads.Ad;
 import ru.skypro.homework.dto.ads.Ads;
 import ru.skypro.homework.dto.ads.CreateOrUpdateAd;
 import ru.skypro.homework.dto.ads.ExtendedAd;
-import ru.skypro.homework.service.AdsService;
+import ru.skypro.homework.service.AdService;
 
 import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/ads")
 @RequiredArgsConstructor
-public class AdsController {
+public class AdController {
 
-    private final AdsService adsService;
+    private final AdService adService;
 
     @GetMapping()
     public ResponseEntity<Ads> getAllAds(Authentication authentication){
-        Ads allAds = adsService.getAllAds(authentication);
+        Ads allAds = adService.getAllAds(authentication);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -34,7 +34,7 @@ public class AdsController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Ad> addAd(Authentication authentication, @RequestPart @Valid CreateOrUpdateAd properties, @RequestPart MultipartFile image){
-        Ad addAd = adsService.addAd(authentication, properties, image);
+        Ad addAd = adService.addAd(authentication, properties, image);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -43,7 +43,7 @@ public class AdsController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ExtendedAd> getAdInfo(Authentication authentication, @PathVariable(name = "id") Integer id){
-        ExtendedAd adInfo = adsService.getAdInfo(authentication, id);
+        ExtendedAd adInfo = adService.getAdInfo(authentication, id);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -52,14 +52,14 @@ public class AdsController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteAd(Authentication authentication, @PathVariable(name = "id") Integer id){
-        adsService.deleteAd(authentication, id);
+        adService.deleteAd(authentication, id);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<Ad> updateAdInfo(Authentication authentication, @PathVariable(name = "id") Integer id, @RequestBody @Valid CreateOrUpdateAd properties){
-        Ad updateAdInfo = adsService.updateAdInfo(authentication, id, properties);
+        Ad updateAdInfo = adService.updateAdInfo(authentication, id, properties);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -68,7 +68,7 @@ public class AdsController {
 
     @GetMapping("/me")
     public ResponseEntity<Ads> getCurrentUserAds(Authentication authentication){
-        Ads currentUserAds = adsService.getCurrentUserAds(authentication);
+        Ads currentUserAds = adService.getCurrentUserAds(authentication);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -77,7 +77,7 @@ public class AdsController {
 
     @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> updateAdImage(Authentication authentication, @PathVariable(name = "id") Integer id, @RequestParam MultipartFile image){
-        String updateAdImage = adsService.updateAdImage(authentication, id, image);
+        String updateAdImage = adService.updateAdImage(authentication, id, image);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
