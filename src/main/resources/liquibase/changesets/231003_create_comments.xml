@@ -7,13 +7,14 @@
 
     <changeSet id="create_table_comment" author="dev">
         <preConditions>
-
-            <not>
-                <tableExists tableName="comment"/>
-            </not>
             <and>
-            <tableExists tableName="user"/>
-            <tableExists tableName="ads"/>
+                <not>
+                    <tableExists tableName="comment"/>
+                </not>
+
+                <tableExists tableName="user"/>
+
+                <tableExists tableName="ads"/>
             </and>
         </preConditions>
 
