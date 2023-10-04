@@ -21,12 +21,8 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
 
     @Override
-    public Comments getAllComments(Authentication authentication, int id) { // временное решение
-        List<Comment> commentList = StreamSupport.stream(commentRepository.findAll().spliterator(), false)
-                .filter(n -> n.getAdsEntity().getPk() == id)
-                .map(commentMapper::toComment)
-                .collect(Collectors.toList());
-        return commentMapper.toComments(commentList);
+    public Comments getAllComments(Authentication authentication, int id) {
+        return null;
     }
 
     @Override

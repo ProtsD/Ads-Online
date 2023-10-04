@@ -11,10 +11,10 @@
             <not>
                 <tableExists tableName="comment"/>
             </not>
-
+            <and>
             <tableExists tableName="user"/>
             <tableExists tableName="ads"/>
-
+            </and>
         </preConditions>
 
         <createTable tableName="comment">
