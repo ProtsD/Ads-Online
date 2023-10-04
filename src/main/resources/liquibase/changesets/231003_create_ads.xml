@@ -6,12 +6,15 @@
         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
     <changeSet id="create_table_ads" author="dev">
         <preConditions>
+            <and>
 
-            <not>
-                <tableExists tableName="ads"/>
-            </not>
+                <not>
+                    <tableExists tableName="ads"/>
+                </not>
 
-            <tableExists tableName="user"/>
+                <tableExists tableName="user"/>
+
+            </and>
 
         </preConditions>
 
