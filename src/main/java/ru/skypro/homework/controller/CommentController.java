@@ -19,7 +19,7 @@ public class CommentController {
     private final CommentService commentService;
 
     @GetMapping("/{id}/comments")
-    public ResponseEntity<Comments> getAllComments(Authentication authentication,@PathVariable int id){
+    public ResponseEntity<Comments> getAllCommentsForAd(Authentication authentication,@PathVariable int id){
         Comments comments =commentService.getAllComments(authentication,id);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
