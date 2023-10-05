@@ -7,6 +7,18 @@ import ru.skypro.homework.entity.UserEntity;
 
 @Component
 public class UserMapper {
+    public UserEntity toEntity(User user) {
+        return new UserEntity()
+                .setId(user.getId())
+                .setUsername(user.getUsername())
+                .setPassword(user.getPassword())
+                .setFirstName(user.getFirstName())
+                .setLastName(user.getLastName())
+                .setPhone(user.getPhone())
+                .setRole(user.getRole())
+                .setImage(user.getImage());
+    }
+
     public User toUser(UserEntity userEntity) {
         return new User()
                 .setId(userEntity.getId())
@@ -17,8 +29,6 @@ public class UserMapper {
                 .setPhone(userEntity.getPhone())
                 .setRole(userEntity.getRole())
                 .setImage(userEntity.getImage());
-//                .setUsername(userEntity.getUsername())
-
     }
 
     public UpdateUser toUpdateUser(UserEntity userEntity) {
