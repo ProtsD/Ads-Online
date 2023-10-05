@@ -1,21 +1,20 @@
 package ru.skypro.homework.service.impl;
 
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 import ru.skypro.homework.dto.user.Register;
+import ru.skypro.homework.security.SecurityUserDetailsService;
 import ru.skypro.homework.service.AuthService;
 
 @Service
 public class AuthServiceImpl implements AuthService {
-
-    private final UserDetailsManager manager;
+    private final SecurityUserDetailsService manager;
     private final PasswordEncoder encoder;
 
-    public AuthServiceImpl(UserDetailsManager manager,
-                           PasswordEncoder passwordEncoder) {
+    public AuthServiceImpl(
+            SecurityUserDetailsService manager,
+            PasswordEncoder passwordEncoder) {
         this.manager = manager;
         this.encoder = passwordEncoder;
     }
@@ -34,14 +33,7 @@ public class AuthServiceImpl implements AuthService {
         if (manager.userExists(register.getUsername())) {
             return false;
         }
-        manager.createUser(
-                User.builder()
-                        .passwordEncoder(this.encoder::encode)
-                        .password(register.getPassword())
-                        .username(register.getUsername())
-                        .roles(register.getRole().name())
-                        .build());
+        manager.createUser(register);
         return true;
     }
-
 }

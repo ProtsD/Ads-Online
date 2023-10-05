@@ -28,10 +28,6 @@
                 <constraints nullable="false"/>
             </column>
 
-            <column name="email" type="varchar()">
-                <constraints nullable="false" unique="true"/>
-            </column>
-
             <column name="first_name" type="varchar(16)">
                 <constraints nullable="false"/>
             </column>
@@ -49,7 +45,6 @@
             </column>
 
             <column name="image" type="varchar()">
-                <constraints nullable="false"/>
             </column>
 
         </createTable>

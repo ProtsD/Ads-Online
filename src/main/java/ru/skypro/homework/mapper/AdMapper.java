@@ -46,7 +46,7 @@ public class AdMapper {
                 .setAuthorFirstName(adEntity.getAuthor().getFirstName())
                 .setAuthorLastName(adEntity.getAuthor().getLastName())
                 .setDescription(adEntity.getDescription())
-                .setEmail(adEntity.getAuthor().getEmail())
+                .setEmail(adEntity.getAuthor().getUsername())
                 .setImage(adEntity.getImage())
                 .setPhone(adEntity.getAuthor().getPhone())
                 .setPrice(adEntity.getPrice())
