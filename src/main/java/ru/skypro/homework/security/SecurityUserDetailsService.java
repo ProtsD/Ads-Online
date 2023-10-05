@@ -31,7 +31,7 @@ public class SecurityUserDetailsService implements UserDetailsService {
         User userDto = userRepository.findByUsername(username)
                 .map(userMapper::toUser)
                 .orElseThrow(
-                        () -> new UsernameNotFoundException("User name %s  not found".formatted(username))
+                        () -> new UsernameNotFoundException("User name "+username+" not found")
                 );
         userDetails.setUserDto(userDto);
         return userDetails;
