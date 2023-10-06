@@ -1,8 +1,10 @@
 package ru.skypro.homework.security;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.skypro.homework.dto.user.Register;
 import ru.skypro.homework.dto.user.User;
@@ -13,18 +15,12 @@ import ru.skypro.homework.repository.UserRepository;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class SecurityUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final SecurityUserPrincipal userDetails;
-
-    public SecurityUserDetailsService(UserRepository userRepository,
-                                      UserMapper userMapper,
-                                      SecurityUserPrincipal userDetails) {
-        this.userRepository = userRepository;
-        this.userMapper = userMapper;
-        this.userDetails = userDetails;
-    }
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserDetails loadUserByUsername(String username) {
@@ -45,7 +41,7 @@ public class SecurityUserDetailsService implements UserDetailsService {
     public void createUser(Register register) {
         UserEntity userEntity = new UserEntity()
                 .setUsername(register.getUsername())
-                .setPassword(register.getPassword())
+                .setPassword(passwordEncoder.encode(register.getPassword()))
                 .setFirstName(register.getFirstName())
                 .setLastName(register.getLastName())
                 .setPhone(register.getPhone())
