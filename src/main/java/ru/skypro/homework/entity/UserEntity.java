@@ -7,7 +7,7 @@ import ru.skypro.homework.dto.user.Role;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "`user`")
+@Table(name = "`users`")
 @Data
 @Accessors(chain = true)
 public class UserEntity {
