@@ -5,6 +5,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,24 +17,25 @@ import ru.skypro.homework.service.AdService;
 
 import javax.validation.Valid;
 
+@CrossOrigin(value = "http://localhost:3000")
 @RestController
 @RequestMapping("/ads")
 @RequiredArgsConstructor
 public class AdController {
-
     private final AdService adService;
 
     @GetMapping()
-    public ResponseEntity<Ads> getAllAds(Authentication authentication){
-        Ads allAds = adService.getAllAds(authentication);
+    public ResponseEntity<Ads> getAllAds() {
+        Ads allAds = adService.getAllAds();
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .body(allAds);
     }
 
+    @PreAuthorize("hasRole('USER')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Ad> addAd(Authentication authentication, @RequestPart @Valid CreateOrUpdateAd properties, @RequestPart MultipartFile image){
+    public ResponseEntity<Ad> addAd(Authentication authentication, @RequestPart @Valid CreateOrUpdateAd properties, @RequestPart MultipartFile image) {
         Ad addAd = adService.addAd(authentication, properties, image);
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -41,8 +43,9 @@ public class AdController {
                 .body(addAd);
     }
 
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/{id}")
-    public ResponseEntity<ExtendedAd> getAdInfo(Authentication authentication, @PathVariable(name = "id") Integer id){
+    public ResponseEntity<ExtendedAd> getAdInfo(Authentication authentication, @PathVariable(name = "id") Integer id) {
         ExtendedAd adInfo = adService.getAdInfo(authentication, id);
 
         return ResponseEntity.ok()
@@ -50,15 +53,17 @@ public class AdController {
                 .body(adInfo);
     }
 
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteAd(Authentication authentication, @PathVariable(name = "id") Integer id){
+    public ResponseEntity<?> deleteAd(Authentication authentication, @PathVariable(name = "id") Integer id) {
         adService.deleteAd(authentication, id);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @PatchMapping("/{id}")
-    public ResponseEntity<Ad> updateAdInfo(Authentication authentication, @PathVariable(name = "id") Integer id, @RequestBody @Valid CreateOrUpdateAd properties){
+    public ResponseEntity<Ad> updateAdInfo(Authentication authentication, @PathVariable(name = "id") Integer id, @RequestBody @Valid CreateOrUpdateAd properties) {
         Ad updateAdInfo = adService.updateAdInfo(authentication, id, properties);
 
         return ResponseEntity.ok()
@@ -66,8 +71,9 @@ public class AdController {
                 .body(updateAdInfo);
     }
 
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/me")
-    public ResponseEntity<Ads> getCurrentUserAds(Authentication authentication){
+    public ResponseEntity<Ads> getCurrentUserAds(Authentication authentication) {
         Ads currentUserAds = adService.getCurrentUserAds(authentication);
 
         return ResponseEntity.ok()
@@ -75,8 +81,9 @@ public class AdController {
                 .body(currentUserAds);
     }
 
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> updateAdImage(Authentication authentication, @PathVariable(name = "id") Integer id, @RequestParam MultipartFile image){
+    public ResponseEntity<String> updateAdImage(Authentication authentication, @PathVariable(name = "id") Integer id, @RequestParam MultipartFile image) {
         String updateAdImage = adService.updateAdImage(authentication, id, image);
 
         return ResponseEntity.ok()
