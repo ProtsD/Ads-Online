@@ -28,6 +28,6 @@ public class AdEntity {
     private String image;
 
     @ManyToOne
-    @JoinColumn(name = "author_id",referencedColumnName = "id")
+    @JoinColumn(name = "author_id", referencedColumnName = "id")
     private UserEntity author;
 }

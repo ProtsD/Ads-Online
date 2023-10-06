@@ -8,11 +8,17 @@ import ru.skypro.homework.dto.ads.CreateOrUpdateAd;
 import ru.skypro.homework.dto.ads.ExtendedAd;
 
 public interface AdService {
-    Ads getAllAds(Authentication authentication);
+    Ads getAllAds();
+
     Ad addAd(Authentication authentication, CreateOrUpdateAd properties, MultipartFile image);
+
     ExtendedAd getAdInfo(Authentication authentication, Integer id);
+
     void deleteAd(Authentication authentication, Integer id);
+
     Ad updateAdInfo(Authentication authentication, Integer id, CreateOrUpdateAd properties);
+
     Ads getCurrentUserAds(Authentication authentication);
+
     String updateAdImage(Authentication authentication, Integer id, MultipartFile image);
 }
