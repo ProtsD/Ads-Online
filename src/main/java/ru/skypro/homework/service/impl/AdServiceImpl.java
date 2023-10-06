@@ -8,11 +8,18 @@ import ru.skypro.homework.dto.ads.Ad;
 import ru.skypro.homework.dto.ads.Ads;
 import ru.skypro.homework.dto.ads.CreateOrUpdateAd;
 import ru.skypro.homework.dto.ads.ExtendedAd;
+import ru.skypro.homework.dto.user.Role;
+import ru.skypro.homework.dto.user.User;
+import ru.skypro.homework.entity.AdEntity;
+import ru.skypro.homework.exception.ForbiddenException;
+import ru.skypro.homework.exception.NotFoundException;
 import ru.skypro.homework.mapper.AdMapper;
+import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.repository.AdRepository;
 import ru.skypro.homework.service.AdService;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -21,10 +28,11 @@ import java.util.stream.StreamSupport;
 public class AdServiceImpl implements AdService {
     private final AdRepository adRepository;
     private final AdMapper adMapper;
+    private final UserMapper userMapper;
 
     @Override
-    public Ads getAllAds(Authentication authentication) {
-        List<Ad> adList = StreamSupport.stream(adRepository.findAll().spliterator(),false)
+    public Ads getAllAds() {
+        List<Ad> adList = StreamSupport.stream(adRepository.findAll().spliterator(), false)
                 .map(adMapper::toAd)
                 .collect(Collectors.toList());
 
@@ -33,31 +41,82 @@ public class AdServiceImpl implements AdService {
 
     @Override
     public Ad addAd(Authentication authentication, CreateOrUpdateAd properties, MultipartFile image) {
-        return null;
+        String imageURL = "TEMPORARY_STUB";
+
+        AdEntity currentAd = adMapper.toEntity(properties)
+                .setImage(imageURL)
+                .setAuthor(userMapper.toEntity(getCurrentUser(authentication)));
+
+        currentAd = adRepository.save(currentAd);
+
+        return adMapper.toAd(currentAd);
     }
 
     @Override
     public ExtendedAd getAdInfo(Authentication authentication, Integer id) {
-        return null;
+        AdEntity currentAd = adRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("")
+        );
+
+        return adMapper.toExtendedAd(currentAd);
     }
 
     @Override
     public void deleteAd(Authentication authentication, Integer id) {
+        AdEntity currentAd = adRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("")
+        );
 
+        if (checkPermission(authentication, currentAd)) {
+            adRepository.delete(currentAd);
+        }
     }
 
     @Override
     public Ad updateAdInfo(Authentication authentication, Integer id, CreateOrUpdateAd properties) {
-        return null;
+        AdEntity currentAd = adRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("")
+        );
+
+        if (checkPermission(authentication, currentAd)) {
+            currentAd.setTitle(properties.getTitle())
+                    .setPrice(properties.getPrice())
+                    .setDescription(properties.getDescription());
+
+            currentAd = adRepository.save(currentAd);
+        }
+
+        return adMapper.toAd(currentAd);
     }
 
     @Override
     public Ads getCurrentUserAds(Authentication authentication) {
-        return null;
+        int currentUserId = getCurrentUser(authentication).getId();
+
+        List<Ad> adList = adRepository.findAllByAuthorId(currentUserId)
+                .orElseThrow(
+                        () -> new NotFoundException("")
+                )
+                .stream().map(adMapper::toAd)
+                .collect(Collectors.toList());
+
+        return adMapper.toAds(adList);
     }
 
     @Override
     public String updateAdImage(Authentication authentication, Integer id, MultipartFile image) {
         return null;
+    }
+
+    private boolean checkPermission(Authentication authentication, AdEntity adEntity) {
+        if (Objects.equals(userMapper.toEntity(getCurrentUser(authentication)), adEntity.getAuthor()) || getCurrentUser(authentication).getRole().equals(Role.ADMIN)) {
+            return true;
+        } else {
+            throw new ForbiddenException("");
+        }
+    }
+
+    private User getCurrentUser(Authentication authentication) {
+        return (User) authentication.getPrincipal();
     }
 }
