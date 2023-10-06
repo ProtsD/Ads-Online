@@ -19,7 +19,6 @@ import ru.skypro.homework.repository.AdRepository;
 import ru.skypro.homework.service.AdService;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -82,6 +81,7 @@ public class AdServiceImpl implements AdService {
             currentAd.setTitle(properties.getTitle())
                     .setPrice(properties.getPrice())
                     .setDescription(properties.getDescription());
+            //TODO image creation
 
             currentAd = adRepository.save(currentAd);
         }
@@ -105,11 +105,19 @@ public class AdServiceImpl implements AdService {
 
     @Override
     public String updateAdImage(Authentication authentication, Integer id, MultipartFile image) {
-        return null;
+        AdEntity currentAd = adRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("")
+        );
+
+        if (checkPermission(authentication, currentAd)) {
+            //TODO image update
+        }
+
+        return currentAd.getImage();
     }
 
     private boolean checkPermission(Authentication authentication, AdEntity adEntity) {
-        if (Objects.equals(userMapper.toEntity(getCurrentUser(authentication)), adEntity.getAuthor()) || getCurrentUser(authentication).getRole().equals(Role.ADMIN)) {
+        if (getCurrentUser(authentication).getId() == adEntity.getAuthor().getId() || getCurrentUser(authentication).getRole().equals(Role.ADMIN)) {
             return true;
         } else {
             throw new ForbiddenException("");
