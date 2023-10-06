@@ -45,6 +45,7 @@ public class AdServiceImpl implements AdService {
         AdEntity currentAd = adMapper.toEntity(properties)
                 .setImage(imageURL)
                 .setAuthor(userMapper.toEntity(getCurrentUser(authentication)));
+        //TODO image creation from MultipartFile
 
         currentAd = adRepository.save(currentAd);
 
@@ -81,7 +82,6 @@ public class AdServiceImpl implements AdService {
             currentAd.setTitle(properties.getTitle())
                     .setPrice(properties.getPrice())
                     .setDescription(properties.getDescription());
-            //TODO image creation
 
             currentAd = adRepository.save(currentAd);
         }
@@ -109,8 +109,11 @@ public class AdServiceImpl implements AdService {
                 () -> new NotFoundException("")
         );
 
+        String imageURL = "TEMPORARY_STUB";
+
         if (checkPermission(authentication, currentAd)) {
-            //TODO image update
+            //TODO image update from MultipartFile
+            currentAd.setImage(imageURL);
         }
 
         return currentAd.getImage();
