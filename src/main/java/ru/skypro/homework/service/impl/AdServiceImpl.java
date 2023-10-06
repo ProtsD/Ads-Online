@@ -16,6 +16,7 @@ import ru.skypro.homework.exception.NotFoundException;
 import ru.skypro.homework.mapper.AdMapper;
 import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.repository.AdRepository;
+import ru.skypro.homework.security.SecurityUserPrincipal;
 import ru.skypro.homework.service.AdService;
 
 import java.util.List;
@@ -128,6 +129,6 @@ public class AdServiceImpl implements AdService {
     }
 
     private User getCurrentUser(Authentication authentication) {
-        return (User) authentication.getPrincipal();
+        return ((SecurityUserPrincipal) authentication.getPrincipal()).getUserDto();
     }
 }

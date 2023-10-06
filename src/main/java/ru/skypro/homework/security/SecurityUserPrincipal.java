@@ -46,6 +46,10 @@ public class SecurityUserPrincipal implements UserDetails {
                 .orElse(null);
     }
 
+    public User getUserDto() {
+        return userDto;
+    }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;
