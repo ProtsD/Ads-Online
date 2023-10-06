@@ -11,5 +11,5 @@ import java.util.Optional;
 
 public interface CommentRepository extends CrudRepository<CommentEntity, Integer> {
     @Query(value = "SELECT * from comment where comment.ad_pk=:adId", nativeQuery = true)
-    Optional<CommentEntity> getAllCommentForAd(@Param("adId") int adId);
+    List<CommentEntity> getAllCommentForAd(@Param("adId") int adId);
 }

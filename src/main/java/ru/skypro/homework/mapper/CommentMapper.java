@@ -27,9 +27,6 @@ public class CommentMapper {
                         .setText(createOrUpdateComment.getText());
             }
     }
-//    public CommentEntity toEntity(){
-//
-//    }
     public Comment toComment(CommentEntity commentEntity) {
         return new Comment()
                 .setAuthor(commentEntity.getAuthor().getId())
