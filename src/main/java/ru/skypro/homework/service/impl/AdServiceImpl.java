@@ -11,13 +11,17 @@ import ru.skypro.homework.dto.ads.ExtendedAd;
 import ru.skypro.homework.dto.user.Role;
 import ru.skypro.homework.dto.user.User;
 import ru.skypro.homework.entity.AdEntity;
+import ru.skypro.homework.entity.ImageEntity;
 import ru.skypro.homework.exception.ForbiddenException;
 import ru.skypro.homework.exception.NotFoundException;
 import ru.skypro.homework.mapper.AdMapper;
 import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.repository.AdRepository;
+import ru.skypro.homework.security.SecurityUserPrincipal;
 import ru.skypro.homework.service.AdService;
+import ru.skypro.homework.service.ImageService;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -28,6 +32,9 @@ public class AdServiceImpl implements AdService {
     private final AdRepository adRepository;
     private final AdMapper adMapper;
     private final UserMapper userMapper;
+    private final ImageService imageService;
+
+    private static final String IMAGE_URL_PREFIX = "/images/";
 
     @Override
     public Ads getAllAds() {
@@ -40,12 +47,17 @@ public class AdServiceImpl implements AdService {
 
     @Override
     public Ad addAd(Authentication authentication, CreateOrUpdateAd properties, MultipartFile image) {
-        String imageURL = "TEMPORARY_STUB";
-
         AdEntity currentAd = adMapper.toEntity(properties)
-                .setImage(imageURL)
                 .setAuthor(userMapper.toEntity(getCurrentUser(authentication)));
-        //TODO image creation from MultipartFile
+
+        try {
+            byte[] imageBytes = image.getBytes();
+            ImageEntity imageEntity = imageService.uploadImage(imageBytes);
+            String imageURL = IMAGE_URL_PREFIX + imageEntity.getId();
+            currentAd.setImage(imageURL);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         currentAd = adRepository.save(currentAd);
 
@@ -68,6 +80,12 @@ public class AdServiceImpl implements AdService {
         );
 
         if (checkPermission(authentication, currentAd)) {
+            try {
+                Integer imageId = Integer.valueOf(currentAd.getImage().replaceAll(IMAGE_URL_PREFIX, ""));
+                imageService.deleteImage(imageId);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
             adRepository.delete(currentAd);
         }
     }
@@ -109,11 +127,19 @@ public class AdServiceImpl implements AdService {
                 () -> new NotFoundException("")
         );
 
-        String imageURL = "TEMPORARY_STUB";
-
         if (checkPermission(authentication, currentAd)) {
-            //TODO image update from MultipartFile
-            currentAd.setImage(imageURL);
+            try {
+                byte[] imageBytes = image.getBytes();
+                Integer imageId = Integer.valueOf(currentAd.getImage().replaceAll(IMAGE_URL_PREFIX, ""));
+                ImageEntity imageEntity = imageService.updateImage(imageId, imageBytes);
+                String imageURL = IMAGE_URL_PREFIX + imageEntity.getId();
+
+                currentAd.setImage(imageURL);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
         }
 
         return currentAd.getImage();
@@ -128,6 +154,6 @@ public class AdServiceImpl implements AdService {
     }
 
     private User getCurrentUser(Authentication authentication) {
-        return (User) authentication.getPrincipal();
+        return ((SecurityUserPrincipal) authentication.getPrincipal()).getUserDto();
     }
 }
