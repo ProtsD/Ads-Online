@@ -16,7 +16,7 @@ public class ImageController {
 
     @GetMapping("/{id}")
     public ResponseEntity<byte[]> getImage(@PathVariable(name = "id") Integer id) {
-        byte[] image = imageService.getImage(id);
+        byte[] image = imageService.getImage(id).getImage();
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_GIF_VALUE)
