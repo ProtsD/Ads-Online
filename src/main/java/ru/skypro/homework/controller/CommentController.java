@@ -31,7 +31,7 @@ public class CommentController {
     }
     @PreAuthorize("hasAuthority('USER')")
     @PostMapping("/{id}/comments")
-    public ResponseEntity<Comment> createComment(Authentication authentication, @PathVariable int id, @RequestBody CreateOrUpdateComment createOrUpdateComment){
+    public ResponseEntity<Comment> createComment(Authentication authentication, @PathVariable int id, @RequestBody @Valid CreateOrUpdateComment createOrUpdateComment){
         Comment comment =commentService.createComment(authentication,id,createOrUpdateComment);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
