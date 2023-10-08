@@ -4,7 +4,7 @@ import ru.skypro.homework.entity.ImageEntity;
 
 public interface ImageService {
     String IMAGE_URL_PREFIX = "/images/";
-    byte[] getImage(Integer id);
+    ImageEntity getImage(Integer id);
 
     ImageEntity uploadImage(byte[] image);
 
