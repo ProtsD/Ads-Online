@@ -33,13 +33,15 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public ImageEntity updateImage(Integer id, byte[] image) {
-        ImageEntity imageEntity = imageRepository.findById(id)
-                .orElseThrow(
-                        () -> new NotFoundException("")
-                );
-        imageEntity.setImage(image);
+        ImageEntity imageEntity = new ImageEntity();
 
-        imageEntity = imageRepository.save(imageEntity);
+        if (imageRepository.existsById(id)) {
+            imageEntity.setId(id);
+            imageEntity.setImage(image);
+            imageEntity = imageRepository.save(imageEntity);
+        } else {
+            throw new NotFoundException("");
+        }
 
         return imageEntity;
     }
