@@ -34,8 +34,6 @@ public class AdServiceImpl implements AdService {
     private final UserMapper userMapper;
     private final ImageService imageService;
 
-    private static final String IMAGE_URL_PREFIX = "/images/";
-
     @Override
     public Ads getAllAds() {
         List<Ad> adList = StreamSupport.stream(adRepository.findAll().spliterator(), false)
@@ -53,7 +51,7 @@ public class AdServiceImpl implements AdService {
         try {
             byte[] imageBytes = image.getBytes();
             ImageEntity imageEntity = imageService.uploadImage(imageBytes);
-            String imageURL = IMAGE_URL_PREFIX + imageEntity.getId();
+            String imageURL = ImageService.IMAGE_URL_PREFIX + imageEntity.getId();
             currentAd.setImage(imageURL);
         } catch (IOException e) {
             e.printStackTrace();
@@ -81,7 +79,7 @@ public class AdServiceImpl implements AdService {
 
         if (checkPermission(authentication, currentAd)) {
             try {
-                Integer imageId = Integer.valueOf(currentAd.getImage().replaceAll(IMAGE_URL_PREFIX, ""));
+                Integer imageId = Integer.valueOf(currentAd.getImage().replaceAll(ImageService.IMAGE_URL_PREFIX, ""));
                 imageService.deleteImage(imageId);
             } catch (NumberFormatException e) {
                 e.printStackTrace();
@@ -130,14 +128,12 @@ public class AdServiceImpl implements AdService {
         if (checkPermission(authentication, currentAd)) {
             try {
                 byte[] imageBytes = image.getBytes();
-                Integer imageId = Integer.valueOf(currentAd.getImage().replaceAll(IMAGE_URL_PREFIX, ""));
+                Integer imageId = Integer.valueOf(currentAd.getImage().replaceAll(ImageService.IMAGE_URL_PREFIX, ""));
                 ImageEntity imageEntity = imageService.updateImage(imageId, imageBytes);
-                String imageURL = IMAGE_URL_PREFIX + imageEntity.getId();
+                String imageURL = ImageService.IMAGE_URL_PREFIX + imageEntity.getId();
 
                 currentAd.setImage(imageURL);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (NumberFormatException e) {
+            } catch (IOException | NumberFormatException e) {
                 e.printStackTrace();
             }
         }
