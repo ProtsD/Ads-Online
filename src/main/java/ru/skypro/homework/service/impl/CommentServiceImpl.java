@@ -59,19 +59,16 @@ public class CommentServiceImpl implements CommentService {
         CommentEntity commentEntity = commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException(""));
         if (checkUser(authentication,adId,commentEntity)){
             commentEntity.setText(createOrUpdateComment.getText());
-            Comment result = commentMapper.toComment(commentRepository.save(commentEntity));
-            return result;
+            commentEntity = commentRepository.save(commentEntity);
         }
-        else{
-            throw new IllegalArgumentException("");
-        }
+        return commentMapper.toComment(commentEntity);
     }
     private boolean checkUser(Authentication authentication,int adId,CommentEntity commentEntity){
-        if (getCurrentUser(authentication).getId()==commentEntity.getAuthor().getId() & commentEntity.getAdsEntity().getPk()==adId || getCurrentUser(authentication).getRole().equals(Role.ADMIN)){
-            return true;
+        if (commentEntity.getAdsEntity().getPk()!=adId) {
+            throw new NotFoundException("");
         }
-        else if (commentEntity.getAdsEntity().getPk()==adId) {
-            return false;
+        else if (getCurrentUser(authentication).getId()==commentEntity.getAuthor().getId() && commentEntity.getAdsEntity().getPk()==adId || getCurrentUser(authentication).getRole().equals(Role.ADMIN)){
+            return true;
         }
         else {
             throw new ForbiddenException("");
