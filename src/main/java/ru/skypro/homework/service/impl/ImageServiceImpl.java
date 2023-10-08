@@ -13,12 +13,11 @@ public class ImageServiceImpl implements ImageService {
     private final ImageRepository imageRepository;
 
     @Override
-    public byte[] getImage(Integer id) {
+    public ImageEntity getImage(Integer id) {
         return imageRepository.findById(id)
                 .orElseThrow(
                         () -> new NotFoundException("")
-                )
-                .getImage();
+                );
     }
 
     @Override
@@ -50,6 +49,8 @@ public class ImageServiceImpl implements ImageService {
     public void deleteImage(Integer id) {
         if (imageRepository.existsById(id)) {
             imageRepository.deleteById(id);
+        } else {
+            throw new NotFoundException("");
         }
     }
 }
