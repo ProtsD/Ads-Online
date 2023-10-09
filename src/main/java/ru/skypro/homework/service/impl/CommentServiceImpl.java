@@ -67,7 +67,7 @@ public class CommentServiceImpl implements CommentService {
         if (commentEntity.getAdsEntity().getPk()!=adId) {
             throw new NotFoundException("");
         }
-        else if (getCurrentUser(authentication).getId()==commentEntity.getAuthor().getId() && commentEntity.getAdsEntity().getPk()==adId || getCurrentUser(authentication).getRole().equals(Role.ADMIN)){
+        else if (getCurrentUser(authentication).getId()==commentEntity.getAuthor().getId() || getCurrentUser(authentication).getRole().equals(Role.ADMIN)){
             return true;
         }
         else {
