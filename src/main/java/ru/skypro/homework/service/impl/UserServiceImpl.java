@@ -18,7 +18,6 @@ import ru.skypro.homework.service.ImageService;
 import ru.skypro.homework.service.UserService;
 
 import java.io.IOException;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +31,7 @@ public class UserServiceImpl implements UserService {
     public void setPassword(Authentication authentication, NewPassword newPassword) {
         UserEntity currentUser = userMapper.toEntity(getCurrentUser(authentication));
 
-        if (Objects.equals(currentUser.getPassword(), passwordEncoder.encode(newPassword.getCurrentPassword()))) {
+        if (passwordEncoder.matches(newPassword.getCurrentPassword(), currentUser.getPassword())) {
             currentUser.setPassword(passwordEncoder.encode(newPassword.getNewPassword()));
             userRepository.save(currentUser);
         } else {
