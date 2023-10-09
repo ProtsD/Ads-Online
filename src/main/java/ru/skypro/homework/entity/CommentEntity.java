@@ -12,6 +12,7 @@ import javax.persistence.*;
 public class CommentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="pk",nullable = false)
     private Integer pk;
     @Column(name = "created_at", nullable = false)
     private long createdAt;
