@@ -1,6 +1,7 @@
 package ru.skypro.homework.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +29,7 @@ import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AdServiceImpl implements AdService {
     private final AdRepository adRepository;
     private final AdMapper adMapper;
@@ -54,7 +56,7 @@ public class AdServiceImpl implements AdService {
             String imageURL = ImageService.IMAGE_URL_PREFIX + imageEntity.getId();
             currentAd.setImage(imageURL);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.debug(e.getMessage());
         }
 
         currentAd = adRepository.save(currentAd);
@@ -82,7 +84,7 @@ public class AdServiceImpl implements AdService {
                 Integer imageId = Integer.valueOf(currentAd.getImage().replaceAll(ImageService.IMAGE_URL_PREFIX, ""));
                 imageService.deleteImage(imageId);
             } catch (NumberFormatException e) {
-                e.printStackTrace();
+                log.debug(e.getMessage());
             }
             adRepository.delete(currentAd);
         }
@@ -134,7 +136,7 @@ public class AdServiceImpl implements AdService {
 
                 currentAd.setImage(imageURL);
             } catch (IOException | NumberFormatException e) {
-                e.printStackTrace();
+                log.debug(e.getMessage());
             }
         }
 
