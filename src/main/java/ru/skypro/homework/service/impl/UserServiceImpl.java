@@ -6,6 +6,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import ru.skypro.homework.dto.user.FullUserInfo;
 import ru.skypro.homework.dto.user.NewPassword;
 import ru.skypro.homework.dto.user.UpdateUser;
 import ru.skypro.homework.dto.user.User;
@@ -44,12 +45,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getData(Authentication authentication) {
-        return ServiceUtils.getCurrentUser(authentication);
+        return userMapper.toUser(ServiceUtils.getCurrentUser(authentication));
     }
 
     @Override
     public UpdateUser updateData(Authentication authentication, UpdateUser updateUser) {
-        User currentUser = ServiceUtils.getCurrentUser(authentication)
+        FullUserInfo currentUser = ServiceUtils.getCurrentUser(authentication)
                 .setFirstName(updateUser.getFirstName())
                 .setLastName(updateUser.getLastName())
                 .setPhone(updateUser.getPhone());

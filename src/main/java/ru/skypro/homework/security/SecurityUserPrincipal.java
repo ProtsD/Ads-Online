@@ -4,7 +4,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import ru.skypro.homework.dto.user.User;
+import ru.skypro.homework.dto.user.FullUserInfo;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -12,21 +12,21 @@ import java.util.Optional;
 
 @Component
 public class SecurityUserPrincipal implements UserDetails {
-    private User userDto;
+    private FullUserInfo userDto;
 
 
-    public SecurityUserPrincipal(User userDto) {
+    public SecurityUserPrincipal(FullUserInfo userDto) {
         this.userDto = userDto;
     }
 
-    public void setUserDto(User userDto) {
+    public void setUserDto(FullUserInfo userDto) {
         this.userDto = userDto;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Optional.ofNullable(userDto)
-                .map(User::getRole)
+                .map(FullUserInfo::getRole)
                 .map(role -> new SimpleGrantedAuthority(role.name()))
                 .map(Collections::singleton)
                 .orElseGet(Collections::emptySet);
@@ -35,18 +35,18 @@ public class SecurityUserPrincipal implements UserDetails {
     @Override
     public String getPassword() {
         return Optional.ofNullable(userDto)
-                .map(User::getPassword)
+                .map(FullUserInfo::getPassword)
                 .orElse(null);
     }
 
     @Override
     public String getUsername() {
         return Optional.ofNullable(userDto)
-                .map(User::getUsername)
+                .map(FullUserInfo::getUsername)
                 .orElse(null);
     }
 
-    public User getUserDto() {
+    public FullUserInfo getUserDto() {
         return userDto;
     }
 
