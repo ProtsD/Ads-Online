@@ -3,7 +3,8 @@ package ru.skypro.homework.service;
 import ru.skypro.homework.entity.ImageEntity;
 
 public interface ImageService {
-    byte[] getImage(Integer id);
+    String IMAGE_URL_PREFIX = "/images/";
+    ImageEntity getImage(Integer id);
 
     ImageEntity uploadImage(byte[] image);
 

@@ -13,12 +13,11 @@ public class ImageServiceImpl implements ImageService {
     private final ImageRepository imageRepository;
 
     @Override
-    public byte[] getImage(Integer id) {
+    public ImageEntity getImage(Integer id) {
         return imageRepository.findById(id)
                 .orElseThrow(
                         () -> new NotFoundException("")
-                )
-                .getImage();
+                );
     }
 
     @Override
@@ -33,13 +32,15 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public ImageEntity updateImage(Integer id, byte[] image) {
-        ImageEntity imageEntity = imageRepository.findById(id)
-                .orElseThrow(
-                        () -> new NotFoundException("")
-                );
-        imageEntity.setImage(image);
+        ImageEntity imageEntity = new ImageEntity();
 
-        imageEntity = imageRepository.save(imageEntity);
+        if (imageRepository.existsById(id)) {
+            imageEntity.setId(id);
+            imageEntity.setImage(image);
+            imageEntity = imageRepository.save(imageEntity);
+        } else {
+            throw new NotFoundException("");
+        }
 
         return imageEntity;
     }
@@ -48,6 +49,8 @@ public class ImageServiceImpl implements ImageService {
     public void deleteImage(Integer id) {
         if (imageRepository.existsById(id)) {
             imageRepository.deleteById(id);
+        } else {
+            throw new NotFoundException("");
         }
     }
 }
