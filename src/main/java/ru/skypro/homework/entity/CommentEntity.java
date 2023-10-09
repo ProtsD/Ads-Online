@@ -12,7 +12,7 @@ import javax.persistence.*;
 public class CommentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="pk",nullable = false)
+    @Column(name = "pk", nullable = false)
     private Integer pk;
     @Column(name = "created_at", nullable = false)
     private long createdAt;
@@ -20,8 +20,8 @@ public class CommentEntity {
     private String text;
     @ManyToOne
     @JoinColumn(name = "ad_pk", referencedColumnName = "pk")
-    private AdEntity adsEntity;
+    private AdEntity adEntity;
     @ManyToOne
-    @JoinColumn(name = "user_id",referencedColumnName = "id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private UserEntity author;
 }

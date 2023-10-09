@@ -46,24 +46,17 @@ public class WebSecurityConfig {
     }
 
     /*
-     * у фронта в данном методе у переменной password значение уже зашифрованное приходит,
-     * из-за этого GET-запрос постоянно выдаёт 401 ошибку, когда во время авторизации он повторно шифрует уже зашифрованный пароль и логин.
-     *
+     * У фронта в utils\api.js у переменной password значение уже зашифрованное Bcrypt'ом в методы передаётся,
+     * из-за этого в запросах с Basic авторизацией постоянно выпадает 401 ошибка.
      *     getUserPhoto(imageId, username, password) {
-     *         return fetch(`${this._url}${imageId}`, {
-     *             headers: {
-     *                 method: 'GET',
-     *                 Authorization: "Basic " + base64.encode(`${username}:${password}`),
-     *             },
-     *         }).then(res => {
-     *             if (!res.ok) {
-     *                 return Promise.reject(`Error: ${res.status}`)
-     *             }
-     *
-     *             return res.blob();
-     *         });
+     *              //.......................
      *     }
+     *     getComments(adId, username, password) {
+     *              //.......................
+     *     }
+     * через Postman всё работает нормально.
      * Как без данного костыля проблему решить я не знаю.
+     * Проверку правильной авторизации убрал для получения картинки профиля. Остальное не трогал.
      */
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
