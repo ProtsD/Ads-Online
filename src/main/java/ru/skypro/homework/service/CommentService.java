@@ -1,7 +1,6 @@
 package ru.skypro.homework.service;
 
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Service;
 import ru.skypro.homework.dto.comment.Comment;
 import ru.skypro.homework.dto.comment.Comments;
 import ru.skypro.homework.dto.comment.CreateOrUpdateComment;

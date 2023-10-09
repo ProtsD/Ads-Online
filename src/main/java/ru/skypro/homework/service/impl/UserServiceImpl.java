@@ -14,9 +14,9 @@ import ru.skypro.homework.entity.UserEntity;
 import ru.skypro.homework.exception.ForbiddenException;
 import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.repository.UserRepository;
-import ru.skypro.homework.security.SecurityUserPrincipal;
 import ru.skypro.homework.service.ImageService;
 import ru.skypro.homework.service.UserService;
+import ru.skypro.homework.service.util.ServiceUtils;
 
 import java.io.IOException;
 
@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void setPassword(Authentication authentication, NewPassword newPassword) {
-        UserEntity currentUser = userMapper.toEntity(getCurrentUser(authentication));
+        UserEntity currentUser = userMapper.toEntity(ServiceUtils.getCurrentUser(authentication));
 
         if (passwordEncoder.matches(newPassword.getCurrentPassword(), currentUser.getPassword())) {
             currentUser.setPassword(passwordEncoder.encode(newPassword.getNewPassword()));
@@ -44,12 +44,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getData(Authentication authentication) {
-        return getCurrentUser(authentication);
+        return ServiceUtils.getCurrentUser(authentication);
     }
 
     @Override
     public UpdateUser updateData(Authentication authentication, UpdateUser updateUser) {
-        User currentUser = getCurrentUser(authentication)
+        User currentUser = ServiceUtils.getCurrentUser(authentication)
                 .setFirstName(updateUser.getFirstName())
                 .setLastName(updateUser.getLastName())
                 .setPhone(updateUser.getPhone());
@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateImage(Authentication authentication, MultipartFile image) {
-        UserEntity currentUser = userMapper.toEntity(getCurrentUser(authentication));
+        UserEntity currentUser = userMapper.toEntity(ServiceUtils.getCurrentUser(authentication));
         String imageURL;
         ImageEntity imageEntity;
 
@@ -81,9 +81,5 @@ public class UserServiceImpl implements UserService {
         } catch (IOException | NumberFormatException e) {
             log.debug(e.getMessage());
         }
-    }
-
-    private User getCurrentUser(Authentication authentication) {
-        return ((SecurityUserPrincipal) authentication.getPrincipal()).getUserDto();
     }
 }

@@ -10,7 +10,6 @@ import ru.skypro.homework.dto.ads.Ads;
 import ru.skypro.homework.dto.ads.CreateOrUpdateAd;
 import ru.skypro.homework.dto.ads.ExtendedAd;
 import ru.skypro.homework.dto.user.Role;
-import ru.skypro.homework.dto.user.User;
 import ru.skypro.homework.entity.AdEntity;
 import ru.skypro.homework.entity.ImageEntity;
 import ru.skypro.homework.exception.ForbiddenException;
@@ -18,9 +17,9 @@ import ru.skypro.homework.exception.NotFoundException;
 import ru.skypro.homework.mapper.AdMapper;
 import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.repository.AdRepository;
-import ru.skypro.homework.security.SecurityUserPrincipal;
 import ru.skypro.homework.service.AdService;
 import ru.skypro.homework.service.ImageService;
+import ru.skypro.homework.service.util.ServiceUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -48,7 +47,7 @@ public class AdServiceImpl implements AdService {
     @Override
     public Ad addAd(Authentication authentication, CreateOrUpdateAd properties, MultipartFile image) {
         AdEntity currentAd = adMapper.toEntity(properties)
-                .setAuthor(userMapper.toEntity(getCurrentUser(authentication)));
+                .setAuthor(userMapper.toEntity(ServiceUtils.getCurrentUser(authentication)));
 
         try {
             byte[] imageBytes = image.getBytes();
@@ -109,12 +108,10 @@ public class AdServiceImpl implements AdService {
 
     @Override
     public Ads getCurrentUserAds(Authentication authentication) {
-        int currentUserId = getCurrentUser(authentication).getId();
+        int currentUserId = ServiceUtils.getCurrentUser(authentication).getId();
 
         List<Ad> adList = adRepository.findAllByAuthorId(currentUserId)
-                .orElseThrow(
-                        () -> new NotFoundException("")
-                )
+                .orElseThrow(NotFoundException::new)
                 .stream().map(adMapper::toAd)
                 .collect(Collectors.toList());
 
@@ -144,14 +141,10 @@ public class AdServiceImpl implements AdService {
     }
 
     private boolean checkPermission(Authentication authentication, AdEntity adEntity) {
-        if (getCurrentUser(authentication).getId() == adEntity.getAuthor().getId() || getCurrentUser(authentication).getRole().equals(Role.ADMIN)) {
+        if (ServiceUtils.getCurrentUser(authentication).getId() == adEntity.getAuthor().getId() || ServiceUtils.getCurrentUser(authentication).getRole().equals(Role.ADMIN)) {
             return true;
         } else {
             throw new ForbiddenException("");
         }
-    }
-
-    private User getCurrentUser(Authentication authentication) {
-        return ((SecurityUserPrincipal) authentication.getPrincipal()).getUserDto();
     }
 }
