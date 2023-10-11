@@ -27,7 +27,7 @@ public class SecurityUserPrincipal implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Optional.ofNullable(userDto)
                 .map(FullUserInfo::getRole)
-                .map(role -> new SimpleGrantedAuthority(role.name()))
+                .map(role -> new SimpleGrantedAuthority("ROLE_"+role.name()))
                 .map(Collections::singleton)
                 .orElseGet(Collections::emptySet);
     }
