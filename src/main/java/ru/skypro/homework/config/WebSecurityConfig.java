@@ -6,7 +6,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -23,7 +22,8 @@ public class WebSecurityConfig {
             "/v3/api-docs",
             "/webjars/**",
             "/login",
-            "/register"
+            "/register",
+            "/images/**"
     };
 
     @Bean
@@ -36,31 +36,15 @@ public class WebSecurityConfig {
                                 authorization
                                         .mvcMatchers(AUTH_WHITELIST)
                                         .permitAll()
-                                        .mvcMatchers("/users/**")
+                                        .antMatchers(HttpMethod.GET, "/ads")
+                                        .permitAll()
+                                        .mvcMatchers("/ads/**", "/users/**")
                                         .authenticated()
                 )
                 .cors()
                 .and()
                 .httpBasic(withDefaults());
         return http.build();
-    }
-
-    /*
-     * У фронта в utils\api.js у переменной password значение уже зашифрованное Bcrypt'ом в методы передаётся,
-     * из-за этого в запросах с Basic авторизацией постоянно выпадает 401 ошибка.
-     *     getUserPhoto(imageId, username, password) {
-     *              //.......................
-     *     }
-     *     getComments(adId, username, password) {
-     *              //.......................
-     *     }
-     * через Postman всё работает нормально.
-     * Как без данного костыля проблему решить я не знаю.
-     * Проверку правильной авторизации убрал для получения картинки профиля. Остальное не трогал.
-     */
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().mvcMatchers(HttpMethod.GET, "/images/**");
     }
 
     @Bean

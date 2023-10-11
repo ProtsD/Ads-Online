@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,7 +23,6 @@ import javax.validation.Valid;
 public class UserController {
     private final UserService userService;
 
-    @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
     @PostMapping("/set_password")
     public ResponseEntity<?> setPassword(Authentication authentication, @RequestBody @Valid NewPassword newPassword) {
         userService.setPassword(authentication, newPassword);
@@ -32,7 +30,6 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
     @GetMapping("/me")
     public ResponseEntity<User> getData(Authentication authentication) {
         User user = userService.getData(authentication);
@@ -42,7 +39,6 @@ public class UserController {
                 .body(user);
     }
 
-    @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
     @PatchMapping("/me")
     public ResponseEntity<UpdateUser> updateData(Authentication authentication, @RequestBody @Valid UpdateUser updateUser) {
         UpdateUser updateUserReturn = userService.updateData(authentication, updateUser);
@@ -52,7 +48,6 @@ public class UserController {
                 .body(updateUserReturn);
     }
 
-    @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
     @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateImage(Authentication authentication, @RequestParam MultipartFile image) {
         userService.updateImage(authentication, image);

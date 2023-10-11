@@ -33,7 +33,6 @@ public class AdController {
                 .body(allAds);
     }
 
-    @PreAuthorize("hasAuthority('USER')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Ad> addAd(Authentication authentication, @RequestPart @Valid CreateOrUpdateAd properties, @RequestPart MultipartFile image) {
         Ad addAd = adService.addAd(authentication, properties, image);
@@ -43,7 +42,6 @@ public class AdController {
                 .body(addAd);
     }
 
-    @PreAuthorize("hasAuthority('USER')")
     @GetMapping("/{id}")
     public ResponseEntity<ExtendedAd> getAdInfo(Authentication authentication, @PathVariable(name = "id") Integer id) {
         ExtendedAd adInfo = adService.getAdInfo(authentication, id);
@@ -53,7 +51,7 @@ public class AdController {
                 .body(adInfo);
     }
 
-    @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
+    @PreAuthorize("@securityAnnotationMethods.hasPermission(#authentication, #id)")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteAd(Authentication authentication, @PathVariable(name = "id") Integer id) {
         adService.deleteAd(authentication, id);
@@ -61,7 +59,7 @@ public class AdController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
+    @PreAuthorize("@securityAnnotationMethods.hasPermission(#authentication, #id)")
     @PatchMapping("/{id}")
     public ResponseEntity<Ad> updateAdInfo(Authentication authentication, @PathVariable(name = "id") Integer id, @RequestBody @Valid CreateOrUpdateAd properties) {
         Ad updateAdInfo = adService.updateAdInfo(authentication, id, properties);
@@ -71,7 +69,6 @@ public class AdController {
                 .body(updateAdInfo);
     }
 
-    @PreAuthorize("hasAuthority('USER')")
     @GetMapping("/me")
     public ResponseEntity<Ads> getCurrentUserAds(Authentication authentication) {
         Ads currentUserAds = adService.getCurrentUserAds(authentication);
@@ -81,7 +78,6 @@ public class AdController {
                 .body(currentUserAds);
     }
 
-    @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
     @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> updateAdImage(Authentication authentication, @PathVariable(name = "id") Integer id, @RequestParam MultipartFile image) {
         String updateAdImage = adService.updateAdImage(authentication, id, image);

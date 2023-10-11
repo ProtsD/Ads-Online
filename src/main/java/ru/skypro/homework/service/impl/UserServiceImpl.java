@@ -29,10 +29,11 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final ImageService imageService;
+    private final ServiceUtils serviceUtils;
 
     @Override
     public void setPassword(Authentication authentication, NewPassword newPassword) {
-        UserEntity currentUser = userMapper.toEntity(ServiceUtils.getCurrentUser(authentication));
+        UserEntity currentUser = userMapper.toEntity(serviceUtils.getCurrentUser(authentication));
 
         if (passwordEncoder.matches(newPassword.getCurrentPassword(), currentUser.getPassword())) {
             currentUser.setPassword(passwordEncoder.encode(newPassword.getNewPassword()));
@@ -45,12 +46,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getData(Authentication authentication) {
-        return userMapper.toUser(ServiceUtils.getCurrentUser(authentication));
+        return userMapper.toUser(serviceUtils.getCurrentUser(authentication));
     }
 
     @Override
     public UpdateUser updateData(Authentication authentication, UpdateUser updateUser) {
-        FullUserInfo currentUser = ServiceUtils.getCurrentUser(authentication)
+        FullUserInfo currentUser = serviceUtils.getCurrentUser(authentication)
                 .setFirstName(updateUser.getFirstName())
                 .setLastName(updateUser.getLastName())
                 .setPhone(updateUser.getPhone());
@@ -61,7 +62,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateImage(Authentication authentication, MultipartFile image) {
-        UserEntity currentUser = userMapper.toEntity(ServiceUtils.getCurrentUser(authentication));
+        UserEntity currentUser = userMapper.toEntity(serviceUtils.getCurrentUser(authentication));
         String imageURL;
         ImageEntity imageEntity;
 

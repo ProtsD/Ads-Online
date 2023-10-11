@@ -8,4 +8,5 @@ import java.util.Optional;
 
 public interface CommentRepository extends CrudRepository<CommentEntity, Integer> {
     Optional<List<CommentEntity>> findAllByAdEntityPk(Integer pk);
+    void deleteByAdEntityPk(Integer pk);
 }
