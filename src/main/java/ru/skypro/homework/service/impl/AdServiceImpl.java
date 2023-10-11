@@ -9,14 +9,13 @@ import ru.skypro.homework.dto.ads.Ad;
 import ru.skypro.homework.dto.ads.Ads;
 import ru.skypro.homework.dto.ads.CreateOrUpdateAd;
 import ru.skypro.homework.dto.ads.ExtendedAd;
-import ru.skypro.homework.dto.user.Role;
 import ru.skypro.homework.entity.AdEntity;
 import ru.skypro.homework.entity.ImageEntity;
-import ru.skypro.homework.exception.ForbiddenException;
 import ru.skypro.homework.exception.NotFoundException;
 import ru.skypro.homework.mapper.AdMapper;
 import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.repository.AdRepository;
+import ru.skypro.homework.repository.CommentRepository;
 import ru.skypro.homework.service.AdService;
 import ru.skypro.homework.service.ImageService;
 import ru.skypro.homework.service.util.ServiceUtils;
@@ -34,6 +33,8 @@ public class AdServiceImpl implements AdService {
     private final AdMapper adMapper;
     private final UserMapper userMapper;
     private final ImageService imageService;
+    private final CommentRepository commentRepository;
+    private final ServiceUtils serviceUtils;
 
     @Override
     public Ads getAllAds() {
@@ -47,7 +48,7 @@ public class AdServiceImpl implements AdService {
     @Override
     public Ad addAd(Authentication authentication, CreateOrUpdateAd properties, MultipartFile image) {
         AdEntity currentAd = adMapper.toEntity(properties)
-                .setAuthor(userMapper.toEntity(ServiceUtils.getCurrentUser(authentication)));
+                .setAuthor(userMapper.toEntity(serviceUtils.getCurrentUser(authentication)));
 
         try {
             byte[] imageBytes = image.getBytes();
@@ -78,15 +79,14 @@ public class AdServiceImpl implements AdService {
                 () -> new NotFoundException("")
         );
 
-        if (checkPermission(authentication, currentAd)) {
-            try {
-                Integer imageId = Integer.valueOf(currentAd.getImage().replaceAll(ImageService.IMAGE_URL_PREFIX, ""));
-                imageService.deleteImage(imageId);
-            } catch (NumberFormatException e) {
-                log.debug(e.getMessage());
-            }
-            adRepository.delete(currentAd);
+        try {
+            Integer imageId = Integer.valueOf(currentAd.getImage().replaceAll(ImageService.IMAGE_URL_PREFIX, ""));
+            imageService.deleteImage(imageId);
+        } catch (NumberFormatException e) {
+            log.debug(e.getMessage());
         }
+        commentRepository.deleteByAdEntityPk(id);
+        adRepository.delete(currentAd);
     }
 
     @Override
@@ -95,20 +95,18 @@ public class AdServiceImpl implements AdService {
                 () -> new NotFoundException("")
         );
 
-        if (checkPermission(authentication, currentAd)) {
-            currentAd.setTitle(properties.getTitle())
-                    .setPrice(properties.getPrice())
-                    .setDescription(properties.getDescription());
+        currentAd.setTitle(properties.getTitle())
+                .setPrice(properties.getPrice())
+                .setDescription(properties.getDescription());
 
-            currentAd = adRepository.save(currentAd);
-        }
+        currentAd = adRepository.save(currentAd);
 
         return adMapper.toAd(currentAd);
     }
 
     @Override
     public Ads getCurrentUserAds(Authentication authentication) {
-        int currentUserId = ServiceUtils.getCurrentUser(authentication).getId();
+        int currentUserId = serviceUtils.getCurrentUser(authentication).getId();
 
         List<Ad> adList = adRepository.findAllByAuthorId(currentUserId)
                 .orElseThrow(NotFoundException::new)
@@ -124,27 +122,17 @@ public class AdServiceImpl implements AdService {
                 () -> new NotFoundException("")
         );
 
-        if (checkPermission(authentication, currentAd)) {
-            try {
-                byte[] imageBytes = image.getBytes();
-                Integer imageId = Integer.valueOf(currentAd.getImage().replaceAll(ImageService.IMAGE_URL_PREFIX, ""));
-                ImageEntity imageEntity = imageService.updateImage(imageId, imageBytes);
-                String imageURL = ImageService.IMAGE_URL_PREFIX + imageEntity.getId();
+        try {
+            byte[] imageBytes = image.getBytes();
+            Integer imageId = Integer.valueOf(currentAd.getImage().replaceAll(ImageService.IMAGE_URL_PREFIX, ""));
+            ImageEntity imageEntity = imageService.updateImage(imageId, imageBytes);
+            String imageURL = ImageService.IMAGE_URL_PREFIX + imageEntity.getId();
 
-                currentAd.setImage(imageURL);
-            } catch (IOException | NumberFormatException e) {
-                log.debug(e.getMessage());
-            }
+            currentAd.setImage(imageURL);
+        } catch (IOException | NumberFormatException e) {
+            log.debug(e.getMessage());
         }
 
         return currentAd.getImage();
-    }
-
-    private boolean checkPermission(Authentication authentication, AdEntity adEntity) {
-        if (ServiceUtils.getCurrentUser(authentication).getId() == adEntity.getAuthor().getId() || ServiceUtils.getCurrentUser(authentication).getRole().equals(Role.ADMIN)) {
-            return true;
-        } else {
-            throw new ForbiddenException("");
-        }
     }
 }

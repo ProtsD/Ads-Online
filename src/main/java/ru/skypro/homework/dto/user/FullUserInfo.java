@@ -7,9 +7,10 @@ import org.springframework.stereotype.Component;
 @Component
 @Data
 @Accessors(chain = true)
-public class User {
+public class FullUserInfo {
     private int id;
     private String username;
+    private String password;
     private String firstName;
     private String lastName;
     private String phone;

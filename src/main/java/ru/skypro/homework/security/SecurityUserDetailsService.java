@@ -7,7 +7,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.skypro.homework.dto.user.Register;
-import ru.skypro.homework.dto.user.User;
 import ru.skypro.homework.entity.UserEntity;
 import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.repository.UserRepository;
@@ -24,12 +23,11 @@ public class SecurityUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) {
-        User userDto = userRepository.findByUsername(username)
-                .map(userMapper::toUser)
+        UserEntity userEntity = userRepository.findByUsername(username)
                 .orElseThrow(
-                        () -> new UsernameNotFoundException("User name "+username+" not found")
+                        () -> new UsernameNotFoundException("User name " + username + " not found")
                 );
-        userDetails.setUserDto(userDto);
+        userDetails.setUserDto(userMapper.toFullUserInfo(userEntity));
         return userDetails;
     }
 

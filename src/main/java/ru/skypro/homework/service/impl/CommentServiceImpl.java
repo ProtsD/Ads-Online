@@ -6,9 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.skypro.homework.dto.comment.Comment;
 import ru.skypro.homework.dto.comment.Comments;
 import ru.skypro.homework.dto.comment.CreateOrUpdateComment;
-import ru.skypro.homework.dto.user.Role;
 import ru.skypro.homework.entity.CommentEntity;
-import ru.skypro.homework.exception.ForbiddenException;
 import ru.skypro.homework.exception.NotFoundException;
 import ru.skypro.homework.mapper.CommentMapper;
 import ru.skypro.homework.mapper.UserMapper;
@@ -27,9 +25,10 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final UserMapper userMapper;
     private final AdRepository adRepository;
+    private final ServiceUtils serviceUtils;
 
     @Override
-    public Comments getAllComments(Authentication authentication, int id) {
+    public Comments getAllComments(Authentication authentication, Integer id) {
         List<Comment> comments = commentRepository.findAllByAdEntityPk(id)
                 .orElseThrow(NotFoundException::new)
                 .stream()
@@ -40,10 +39,10 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Comment createComment(Authentication authentication, int id, CreateOrUpdateComment createOrUpdateComment) {
+    public Comment createComment(Authentication authentication, Integer id, CreateOrUpdateComment createOrUpdateComment) {
         CommentEntity result = commentMapper.toNewEntity(
                 createOrUpdateComment,
-                userMapper.toEntity(ServiceUtils.getCurrentUser(authentication)),
+                userMapper.toEntity(serviceUtils.getCurrentUser(authentication)),
                 adRepository.findById(id).orElseThrow(() -> new NotFoundException(""))
         );
 
@@ -53,33 +52,21 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void deleteComment(Authentication authentication, int adId, int commentId) {
-        CommentEntity commentEntity = commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException(""));
-
-        if (checkUser(authentication, adId, commentEntity)) {
+    public void deleteComment(Authentication authentication, Integer adId, Integer commentId) {
+        if (commentRepository.existsById(commentId)) {
             commentRepository.deleteById(commentId);
+        } else {
+            throw new NotFoundException("");
         }
     }
 
     @Override
-    public Comment updateComment(Authentication authentication, int adId, int commentId, CreateOrUpdateComment createOrUpdateComment) {
+    public Comment updateComment(Authentication authentication, Integer adId, Integer commentId, CreateOrUpdateComment createOrUpdateComment) {
         CommentEntity commentEntity = commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException(""));
 
-        if (checkUser(authentication, adId, commentEntity)) {
-            commentEntity.setText(createOrUpdateComment.getText());
-            commentEntity = commentRepository.save(commentEntity);
-        }
+        commentEntity.setText(createOrUpdateComment.getText());
+        commentEntity = commentRepository.save(commentEntity);
 
         return commentMapper.toComment(commentEntity);
-    }
-
-    private boolean checkUser(Authentication authentication, int adId, CommentEntity commentEntity) {
-        if (commentEntity.getAdEntity().getPk() != adId) {
-            throw new NotFoundException("");
-        } else if (ServiceUtils.getCurrentUser(authentication).getId() == commentEntity.getAuthor().getId() || ServiceUtils.getCurrentUser(authentication).getRole().equals(Role.ADMIN)) {
-            return true;
-        } else {
-            throw new ForbiddenException("");
-        }
     }
 }
