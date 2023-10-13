@@ -35,6 +35,8 @@ public class CommentServiceImpl implements CommentService {
                 .map(commentMapper::toComment)
                 .collect(Collectors.toList());
 
+        if (comments.isEmpty()) throw new NotFoundException();
+
         return commentMapper.toComments(comments);
     }
 

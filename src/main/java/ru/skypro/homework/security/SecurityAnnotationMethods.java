@@ -7,7 +7,6 @@ import ru.skypro.homework.dto.user.FullUserInfo;
 import ru.skypro.homework.dto.user.Role;
 import ru.skypro.homework.entity.AdEntity;
 import ru.skypro.homework.entity.CommentEntity;
-import ru.skypro.homework.exception.ForbiddenException;
 import ru.skypro.homework.exception.NotFoundException;
 import ru.skypro.homework.repository.AdRepository;
 import ru.skypro.homework.repository.CommentRepository;
@@ -26,11 +25,7 @@ public class SecurityAnnotationMethods {
         FullUserInfo currentUser = serviceUtils.getCurrentUser(authentication);
         AdEntity currentAd = adRepository.findById(id).orElseThrow(NotFoundException::new);
 
-        if (currentUser.getId() == currentAd.getAuthor().getId() || currentUser.getRole().equals(Role.ADMIN)) {
-            return true;
-        } else {
-            throw new ForbiddenException("");
-        }
+        return currentUser.getId() == currentAd.getAuthor().getId() || currentUser.getRole().equals(Role.ADMIN);
     }
 
     public boolean hasPermission(Authentication authentication, Integer adId, Integer commentId) {
@@ -38,10 +33,6 @@ public class SecurityAnnotationMethods {
 
         if (!Objects.equals(commentEntity.getAdEntity().getPk(), adId)) {
             throw new NotFoundException("");
-        } else if (serviceUtils.getCurrentUser(authentication).getId() == commentEntity.getAuthor().getId() || serviceUtils.getCurrentUser(authentication).getRole().equals(Role.ADMIN)) {
-            return true;
-        } else {
-            throw new ForbiddenException("");
-        }
+        } else return serviceUtils.getCurrentUser(authentication).getId() == commentEntity.getAuthor().getId() || serviceUtils.getCurrentUser(authentication).getRole().equals(Role.ADMIN);
     }
 }
