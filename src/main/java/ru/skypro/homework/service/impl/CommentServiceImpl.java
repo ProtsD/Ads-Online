@@ -30,7 +30,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public Comments getAllComments(Authentication authentication, Integer id) {
         List<Comment> comments = commentRepository.findAllByAdEntityPk(id)
-                .orElseThrow(NotFoundException::new)
+                .orElseThrow()
                 .stream()
                 .map(commentMapper::toComment)
                 .collect(Collectors.toList());
