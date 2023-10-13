@@ -4,8 +4,9 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
-    <changeSet id="changelog-master 001" author="dev"/>
+    <changeSet id="changelog-master 002" author="dev"/>
     <include file="liquibase/changesets/231003_create_user.xml"/>
     <include file="liquibase/changesets/231003_create_ads.xml"/>
     <include file="liquibase/changesets/231003_create_comments.xml"/>
+    <include file="liquibase/changesets/231007_create_images.xml"/>
 </databaseChangeLog>

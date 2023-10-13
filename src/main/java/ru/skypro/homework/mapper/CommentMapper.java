@@ -3,16 +3,29 @@ package ru.skypro.homework.mapper;
 import org.springframework.stereotype.Component;
 import ru.skypro.homework.dto.comment.Comment;
 import ru.skypro.homework.dto.comment.Comments;
+import ru.skypro.homework.dto.comment.CreateOrUpdateComment;
+import ru.skypro.homework.entity.AdEntity;
 import ru.skypro.homework.entity.CommentEntity;
+import ru.skypro.homework.entity.UserEntity;
 
+import java.util.Date;
 import java.util.List;
 
 @Component
 public class CommentMapper {
-    //    public CommentEntity toEntity(CreateOrUpdateComment createOrUpdateComment){
-//        return new CommentEntity()
-//                .setText(createOrUpdateComment.getText());
-//    }
+    public CommentEntity toNewEntity(CreateOrUpdateComment createOrUpdateComment, UserEntity userEntity, AdEntity adEntity) {
+        Date date = new Date();
+        if (userEntity == null || adEntity == null) {
+            return null;
+        } else {
+            return new CommentEntity()
+                    .setAuthor(userEntity)
+                    .setAdEntity(adEntity)
+                    .setCreatedAt(date.getTime())
+                    .setText(createOrUpdateComment.getText());
+        }
+    }
+
     public Comment toComment(CommentEntity commentEntity) {
         return new Comment()
                 .setAuthor(commentEntity.getAuthor().getId())
