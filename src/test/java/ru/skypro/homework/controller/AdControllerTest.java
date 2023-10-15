@@ -90,7 +90,6 @@ public class AdControllerTest {
 
     @BeforeEach
     void beforeEach() throws Exception {
-        //TODO
         users = TestUtils.createUniqueUsers(TOTAL_NUMBER_OF_PRE_CREATED_USERS, passwordEncoder);
         admin = TestUtils.createAdmin(users);
         userRepository.saveAll(users);

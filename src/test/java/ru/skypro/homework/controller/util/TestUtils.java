@@ -107,7 +107,6 @@ public class TestUtils {
         final int priceMinValue = 0, priceMaxValue = 10000000;
         final int titleMinSize = 4, titleMaxSize = 32;
         final int descriptionMinSize = 8, descriptionMaxSize = 64;
-        String stubImagePath = "src/test/resources/static/images/image.png";
         final Faker ruFaker = new Faker(new Locale("ru-RU"));
 
         List<AdEntity> ads = new ArrayList<>();
@@ -129,7 +128,7 @@ public class TestUtils {
             adDescription = adDescription.substring(0, Math.min(adDescription.length(), descriptionMaxSize));
 
 
-            MockMultipartFile imageFile = new MockMultipartFile("file", "file1.png", MediaType.IMAGE_PNG_VALUE, stubImagePath.getBytes());
+            MockMultipartFile imageFile = new MockMultipartFile("file", "file1.png", MediaType.IMAGE_PNG_VALUE, "mockPseudoValue".getBytes());
             ImageEntity imageEntity = imageService.uploadImage(imageFile.getBytes());
             String uploadedImage = ImageService.IMAGE_URL_PREFIX + imageEntity.getId();
 
