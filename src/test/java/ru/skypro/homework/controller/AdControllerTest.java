@@ -29,7 +29,7 @@ import ru.skypro.homework.repository.AdRepository;
 import ru.skypro.homework.repository.CommentRepository;
 import ru.skypro.homework.repository.ImageRepository;
 import ru.skypro.homework.repository.UserRepository;
-import ru.skypro.homework.service.impl.ImageServiceImpl;
+import ru.skypro.homework.service.ImageService;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -56,7 +56,7 @@ public class AdControllerTest {
     @Autowired
     private ImageRepository imageRepository;
     @Autowired
-    private ImageServiceImpl imageService;
+    private ImageService imageService;
     @Autowired
     private DataSource dataSource;
     @Container
