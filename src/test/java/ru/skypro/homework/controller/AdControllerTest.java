@@ -20,6 +20,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.skypro.homework.HomeworkApplication;
 import ru.skypro.homework.controller.util.TestUtils;
 import ru.skypro.homework.entity.AdEntity;
+import ru.skypro.homework.entity.CommentEntity;
 import ru.skypro.homework.entity.UserEntity;
 import ru.skypro.homework.mapper.AdMapper;
 import ru.skypro.homework.mapper.CommentMapper;
@@ -74,8 +75,10 @@ public class AdControllerTest {
     private PasswordEncoder passwordEncoder;
     private final static int TOTAL_NUMBER_OF_PRE_CREATED_USERS = 50;
     private final static int TOTAL_NUMBER_OF_PRE_CREATED_ADS = 10;
+    private final static int MAX_NUMBER_OF_PRE_CREATED_COMMENTS_FOR_SINGLE_AD = 10;
     private List<UserEntity> users;
     private List<AdEntity> ads;
+    private List<CommentEntity> comments;
     private UserEntity admin;
 
     @DynamicPropertySource
@@ -86,7 +89,7 @@ public class AdControllerTest {
     }
 
     @BeforeEach
-    void beforeEach() {
+    void beforeEach() throws Exception {
         //TODO
         users = TestUtils.createUniqueUsers(TOTAL_NUMBER_OF_PRE_CREATED_USERS, passwordEncoder);
         admin = TestUtils.createAdmin(users);
@@ -94,14 +97,17 @@ public class AdControllerTest {
 
         ads = TestUtils.createAds(TOTAL_NUMBER_OF_PRE_CREATED_ADS, users, imageService);
         adRepository.saveAll(ads);
+
+        comments = TestUtils.createComments(MAX_NUMBER_OF_PRE_CREATED_COMMENTS_FOR_SINGLE_AD, users, ads);
+        commentRepository.saveAll(comments);
     }
 
     @AfterEach
     void afterEach() {
         commentRepository.deleteAll();
         adRepository.deleteAll();
-        userRepository.deleteAll();
         imageRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @DisplayName("Проверка работоспособности соединения с БД PostgreSQL.")
@@ -128,6 +134,11 @@ public class AdControllerTest {
 
         for (AdEntity currentAd : ads) {
             System.out.println(currentAd);
+        }
+        System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+
+        for (CommentEntity comment : comments) {
+            System.out.println(comment);
         }
         System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 
