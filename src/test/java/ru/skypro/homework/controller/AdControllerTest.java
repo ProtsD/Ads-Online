@@ -313,7 +313,7 @@ public class AdControllerTest {
         do {
             authentication = TestUtils.createAuthenticationTokenForRandomUser(users);
         } while (existedAd.getAuthor().getId() == serviceUtils.getCurrentUser(authentication).getId()
-                && serviceUtils.getCurrentUser(authentication).getRole().equals(Role.ADMIN));
+                || serviceUtils.getCurrentUser(authentication).getRole().equals(Role.ADMIN));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -446,7 +446,7 @@ public class AdControllerTest {
         do {
             authentication = TestUtils.createAuthenticationTokenForRandomUser(users);
         } while (existedAd.getAuthor().getId() == serviceUtils.getCurrentUser(authentication).getId()
-                && serviceUtils.getCurrentUser(authentication).getRole().equals(Role.ADMIN));
+                || serviceUtils.getCurrentUser(authentication).getRole().equals(Role.ADMIN));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -625,7 +625,7 @@ public class AdControllerTest {
         do {
             authentication = TestUtils.createAuthenticationTokenForRandomUser(users);
         } while (existedAd.getAuthor().getId() == serviceUtils.getCurrentUser(authentication).getId()
-                && serviceUtils.getCurrentUser(authentication).getRole().equals(Role.ADMIN));
+                || serviceUtils.getCurrentUser(authentication).getRole().equals(Role.ADMIN));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         MockMultipartFile imageFile = new MockMultipartFile("image", "file1.png", MediaType.IMAGE_PNG_VALUE, "mockPseudoValue".getBytes());
