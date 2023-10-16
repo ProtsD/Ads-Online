@@ -24,6 +24,7 @@ import ru.skypro.homework.HomeworkApplication;
 import ru.skypro.homework.controller.util.TestUtils;
 import ru.skypro.homework.dto.ads.Ad;
 import ru.skypro.homework.dto.ads.CreateOrUpdateAd;
+import ru.skypro.homework.dto.user.Role;
 import ru.skypro.homework.entity.AdEntity;
 import ru.skypro.homework.entity.CommentEntity;
 import ru.skypro.homework.entity.UserEntity;
@@ -311,7 +312,8 @@ public class AdControllerTest {
 
         do {
             authentication = TestUtils.createAuthenticationTokenForRandomUser(users);
-        } while (Objects.equals(existedAd.getAuthor(), userMapper.toEntity(serviceUtils.getCurrentUser(authentication))));
+        } while (existedAd.getAuthor().getId() == serviceUtils.getCurrentUser(authentication).getId()
+                && serviceUtils.getCurrentUser(authentication).getRole().equals(Role.ADMIN));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -333,7 +335,7 @@ public class AdControllerTest {
         AdEntity existedAd;
         do {
             existedAd = TestUtils.getRandomExistedAd(ads);
-        } while (Objects.equals(existedAd.getAuthor(), admin));
+        } while (Objects.equals(existedAd.getAuthor().getId(), admin.getId()));
 
         long adsCountBefore = adRepository.count();
         long commentsCountBefore = commentRepository.count();
@@ -443,7 +445,8 @@ public class AdControllerTest {
 
         do {
             authentication = TestUtils.createAuthenticationTokenForRandomUser(users);
-        } while (Objects.equals(existedAd.getAuthor(), userMapper.toEntity(serviceUtils.getCurrentUser(authentication))));
+        } while (existedAd.getAuthor().getId() == serviceUtils.getCurrentUser(authentication).getId()
+                && serviceUtils.getCurrentUser(authentication).getRole().equals(Role.ADMIN));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -466,7 +469,7 @@ public class AdControllerTest {
         AdEntity existedAd;
         do {
             existedAd = TestUtils.getRandomExistedAd(ads);
-        } while (Objects.equals(existedAd.getAuthor(), admin));
+        } while (Objects.equals(existedAd.getAuthor().getId(), admin.getId()));
 
         Ad expectedAd = new Ad()
                 .setAuthor(existedAd.getAuthor().getId())
@@ -621,7 +624,8 @@ public class AdControllerTest {
         Authentication authentication;
         do {
             authentication = TestUtils.createAuthenticationTokenForRandomUser(users);
-        } while (Objects.equals(existedAd.getAuthor(), userMapper.toEntity(serviceUtils.getCurrentUser(authentication))));
+        } while (existedAd.getAuthor().getId() == serviceUtils.getCurrentUser(authentication).getId()
+                && serviceUtils.getCurrentUser(authentication).getRole().equals(Role.ADMIN));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         MockMultipartFile imageFile = new MockMultipartFile("image", "file1.png", MediaType.IMAGE_PNG_VALUE, "mockPseudoValue".getBytes());
@@ -649,7 +653,7 @@ public class AdControllerTest {
         AdEntity existedAd;
         do {
             existedAd = TestUtils.getRandomExistedAd(ads);
-        } while (Objects.equals(existedAd.getAuthor(), admin));
+        } while (Objects.equals(existedAd.getAuthor().getId(), admin.getId()));
 
         MockMultipartFile imageFile = new MockMultipartFile("image", "file1.png", MediaType.IMAGE_PNG_VALUE, "mockPseudoValue".getBytes());
 
