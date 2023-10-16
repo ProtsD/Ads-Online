@@ -41,8 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest(classes = HomeworkApplication.class)
 @Testcontainers
@@ -135,18 +134,27 @@ public class CommentControllerTest {
     @DisplayName("Добавление комментария под объявление авторизированным пользователем")
     @Test
     void createCommentTest() throws Exception {
-        Authentication authentication = TestUtils.createAuthenticationTokenForRandomUser(users);
+        UserEntity currentUser = TestUtils.getRandomUser(users);
+        Authentication authentication = TestUtils.createAuthenticationTokenForUser(currentUser);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         AdEntity adEntity = TestUtils.getRandomExistedAd(ads);
         CreateOrUpdateComment createOrUpdateComment = new CreateOrUpdateComment();
         createOrUpdateComment.setText("New Text23");
         String json = objectMapper.writeValueAsString(createOrUpdateComment);
+        Comment currentComment = new Comment();
+        currentComment.setAuthor(currentUser.getId());
+        currentComment.setText(createOrUpdateComment.getText());
+        currentComment.setAuthorFirstName(currentUser.getFirstName());
+        currentComment.setAuthorImage(currentUser.getImage());
         long countFirst = commentRepository.count();
         mockMvc.perform(post("/ads/{id}/comments", adEntity.getPk())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(authenticated().withAuthenticationName(authentication.getName()))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.text").value(currentComment.getText()))
+                .andExpect(jsonPath("$.authorFirstName").value(currentComment.getAuthorFirstName()))
+                .andExpect(jsonPath("$.author").value(currentComment.getAuthor()));
         long countAfter = commentRepository.count();
         assertEquals(countFirst + 1, countAfter);
     }
@@ -166,7 +174,24 @@ public class CommentControllerTest {
         long countAfter = commentRepository.count();
         assertEquals(countFirst, countAfter);
     }
-
+    @DisplayName("Добавление комментария под объявление с плохим запросом авторизированным пользователем")
+    @Test
+    void createCommentTestNegativeBadRequest() throws Exception{
+        Authentication authentication = TestUtils.createAuthenticationTokenForRandomUser(users);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        AdEntity adEntity = TestUtils.getRandomExistedAd(ads);
+        CreateOrUpdateComment createOrUpdateComment = new CreateOrUpdateComment();
+        createOrUpdateComment.setText("New");
+        String json = objectMapper.writeValueAsString(createOrUpdateComment);
+        long countFirst = commentRepository.count();
+        mockMvc.perform(post("/ads/{id}/comments", adEntity.getPk())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(authenticated().withAuthenticationName(authentication.getName()))
+                .andExpect(status().isBadRequest());
+        long countAfter = commentRepository.count();
+        assertEquals(countFirst, countAfter);
+    }
     @DisplayName("Удаление своего комментария авторизированным пользователем")
     @Test
     void deleteCommentTest() throws Exception {
@@ -245,7 +270,7 @@ public class CommentControllerTest {
         assertEquals(countFirst, countAfter);
     }
 
-    @DisplayName("Обновление своего комментария авторизованным пользоватаелем")
+    @DisplayName("Обновление своего комментария авторизованным пользователем")
     @Test
     void updateCommentTest() throws Exception {
         AdEntity adEntity = TestUtils.getRandomExistedAd(ads);
@@ -270,7 +295,7 @@ public class CommentControllerTest {
                 .andExpect(content().json(currentComment))
                 .andExpect(status().isOk());
     }
-    @DisplayName("Обновление не своего комментария авторизованным пользоватаелем")
+    @DisplayName("Обновление не своего комментария авторизованным пользователем")
     @Test
     void updateCommentTestNegative() throws Exception{
         AdEntity adEntity = TestUtils.getRandomExistedAd(ads);
@@ -294,7 +319,7 @@ public class CommentControllerTest {
                 .andExpect(authenticated().withAuthenticationName(authentication.getName()))
                 .andExpect(status().isForbidden());
     }
-    @DisplayName("Обновление комментария авторизованным пользоватаелем с ролью админ")
+    @DisplayName("Обновление комментария авторизованным пользователем с ролью админ")
     @Test
     void updateCommentTestWithAdminRole() throws Exception {
         AdEntity adEntity = TestUtils.getRandomExistedAd(ads);
@@ -316,7 +341,7 @@ public class CommentControllerTest {
                 .andExpect(content().json(currentComment))
                 .andExpect(status().isOk());
     }
-    @DisplayName("Обновление несуществующего комментария авторизованным пользоватаелем")
+    @DisplayName("Обновление несуществующего комментария авторизованным пользователем")
     @Test
     void updateCommentTestIfNotFound() throws Exception {
         AdEntity adEntity = TestUtils.getRandomExistedAd(ads);
@@ -335,5 +360,29 @@ public class CommentControllerTest {
                         .content(json))
                 .andExpect(authenticated().withAuthenticationName(authentication.getName()))
                 .andExpect(status().isNotFound());
+    }
+    @DisplayName("")
+    @Test
+    void updateCommentTestNegativeBadRequest() throws Exception{
+        AdEntity adEntity = TestUtils.getRandomExistedAd(ads);
+        List<CommentEntity> commentEntityListWithPkAd = comments.stream()
+                .filter(a -> a.getAdEntity().getPk().equals(adEntity.getPk()))
+                .collect(Collectors.toList());
+        CommentEntity commentEntity = TestUtils.getRandomExistedComment(commentEntityListWithPkAd);
+        List<UserEntity> userEntities = users.stream()
+                .filter(a -> a.getId().equals(commentEntity.getAuthor().getId()))
+                .collect(Collectors.toList());
+        Authentication authentication = TestUtils.createAuthenticationTokenForRandomUser(userEntities);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        CreateOrUpdateComment createOrUpdateComment = new CreateOrUpdateComment();
+        createOrUpdateComment.setText("New");
+        String json = objectMapper.writeValueAsString(createOrUpdateComment);
+        commentEntity.setText(createOrUpdateComment.getText());
+        String currentComment = objectMapper.writeValueAsString(commentMapper.toComment(commentEntity));
+        mockMvc.perform(patch("/ads/{adId}/comments/{commentId}", adEntity.getPk(), commentEntity.getPk())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(authenticated().withAuthenticationName(authentication.getName()))
+                .andExpect(status().isBadRequest());
     }
 }
