@@ -12,4 +12,5 @@ public class Comment {
     private long createdAt;
     private int pk;
     private String text;
+    private int adPk;
 }
