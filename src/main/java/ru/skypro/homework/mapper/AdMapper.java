@@ -8,12 +8,13 @@ import ru.skypro.homework.dto.ads.ExtendedAd;
 import ru.skypro.homework.entity.AdEntity;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class AdMapper {
 
-    public AdEntity toEntity(CreateOrUpdateAd createOrUpdateAd){
-        if(createOrUpdateAd == null){
+    public AdEntity toEntity(CreateOrUpdateAd createOrUpdateAd) {
+        if (createOrUpdateAd == null) {
             return null;
         }
 
@@ -23,8 +24,8 @@ public class AdMapper {
                 .setDescription(createOrUpdateAd.getDescription());
     }
 
-    public Ad toAd(AdEntity adEntity){
-        if(adEntity == null){
+    public Ad toAd(AdEntity adEntity) {
+        if (adEntity == null) {
             return null;
         }
 
@@ -36,8 +37,15 @@ public class AdMapper {
                 .setTitle(adEntity.getTitle());
     }
 
-    public ExtendedAd toExtendedAd(AdEntity adEntity){
-        if(adEntity == null){
+    public List<Ad> toAdList(List<AdEntity> adEntities) {
+        if (adEntities == null) {
+            return null;
+        }
+        return adEntities.stream().map(this::toAd).collect(Collectors.toList());
+    }
+
+    public ExtendedAd toExtendedAd(AdEntity adEntity) {
+        if (adEntity == null) {
             return null;
         }
 
@@ -53,8 +61,8 @@ public class AdMapper {
                 .setTitle(adEntity.getTitle());
     }
 
-    public Ads toAds(List<Ad> adList){
-        if (adList == null){
+    public Ads toAds(List<Ad> adList) {
+        if (adList == null) {
             return null;
         }
 
