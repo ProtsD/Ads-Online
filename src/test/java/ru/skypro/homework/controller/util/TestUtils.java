@@ -32,50 +32,32 @@ public class TestUtils {
         List<UserEntity> users = new ArrayList<>();
 
         List<String> uniqueEmails = Stream
-                .generate(
-                        () -> enFaker.internet().emailAddress()
-                )
+                .generate(() -> enFaker.internet().emailAddress())
                 .distinct()
-                .filter(
-                        email -> email.length() >= usernameMinSize && email.length() <= usernameMaxSize
-                )
+                .filter(email -> email.length() >= usernameMinSize && email.length() <= usernameMaxSize)
                 .limit(maxUsers)
                 .collect(Collectors.toList());
 
         List<String> passwords = Stream
-                .generate(
-                        () -> ruFaker.internet().password()
-                )
-                .filter(
-                        password -> password.length() >= passwordMinSize && password.length() <= passwordMaxSize
-                )
+                .generate(() -> ruFaker.internet().password())
+                .filter(password -> password.length() >= passwordMinSize && password.length() <= passwordMaxSize)
                 .limit(maxUsers)
                 .collect(Collectors.toList());
 
         List<String> firstNames = Stream
-                .generate(
-                        () -> ruFaker.name().firstName()
-                )
-                .filter(
-                        firstName -> firstName.length() >= firstNameMinSize && firstName.length() <= firstNameMaxSize
-                )
+                .generate(() -> ruFaker.name().firstName())
+                .filter(firstName -> firstName.length() >= firstNameMinSize && firstName.length() <= firstNameMaxSize)
                 .limit(maxUsers)
                 .collect(Collectors.toList());
 
         List<String> lastNames = Stream
-                .generate(
-                        () -> ruFaker.name().lastName()
-                )
-                .filter(
-                        lastName -> lastName.length() >= lastNameMinSize && lastName.length() <= lastNameMaxSize
-                )
+                .generate(() -> ruFaker.name().lastName())
+                .filter(lastName -> lastName.length() >= lastNameMinSize && lastName.length() <= lastNameMaxSize)
                 .limit(maxUsers)
                 .collect(Collectors.toList());
 
         List<String> uniquePhones = Stream
-                .generate(
-                        () -> ruFaker.phoneNumber().phoneNumber()
-                )
+                .generate(() -> ruFaker.phoneNumber().phoneNumber())
                 .distinct()
                 .limit(maxUsers)
                 .collect(Collectors.toList());
