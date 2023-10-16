@@ -280,16 +280,26 @@ public class AdControllerTest {
         Authentication authentication = TestUtils.createAuthenticationTokenForUser(existedAd.getAuthor());
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        long countBefore = adRepository.count();
-        int numberOfDeletedItems = 1;
+        long adsCountBefore = adRepository.count();
+        long commentsCountBefore = commentRepository.count();
+        int numberOfDeletedAds = 1;
+
+        int commentsCountForCurrentAd = 0;
+        for (CommentEntity currentComment : comments) {
+            if (Objects.equals(currentComment.getAdEntity(), existedAd)) {
+                commentsCountForCurrentAd++;
+            }
+        }
 
         mockMvc.perform(delete("/ads/{id}", existedAd.getPk()))
                 .andExpect(authenticated().withAuthenticationName(authentication.getName()))
                 .andExpect(status().isNoContent());
 
-        long countAfter = adRepository.count();
+        long adsCountAfter = adRepository.count();
+        long commentCountAfter = commentRepository.count();
 
-        assertEquals(countBefore - numberOfDeletedItems, countAfter);
+        assertEquals(adsCountBefore - numberOfDeletedAds, adsCountAfter);
+        assertEquals(commentsCountBefore - commentsCountForCurrentAd, commentCountAfter);
     }
 
     @DisplayName("Удаление чужого объявления авторизованным пользователем.")
@@ -319,20 +329,32 @@ public class AdControllerTest {
     void deleteAd_withAuthorization_someoneElseAd_withAdminRole_thenNoContent() throws Exception {
         Authentication authentication = TestUtils.createAuthenticationTokenForUser(admin);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        long countBefore = adRepository.count();
-        int numberOfDeletedItems = 1;
 
         AdEntity existedAd;
         do {
             existedAd = TestUtils.getRandomExistedAd(ads);
         } while (Objects.equals(existedAd.getAuthor(), admin));
 
+        long adsCountBefore = adRepository.count();
+        long commentsCountBefore = commentRepository.count();
+        int numberOfDeletedAds = 1;
+
+        int commentsCountForCurrentAd = 0;
+        for (CommentEntity currentComment : comments) {
+            if (Objects.equals(currentComment.getAdEntity(), existedAd)) {
+                commentsCountForCurrentAd++;
+            }
+        }
+
         mockMvc.perform(delete("/ads/{id}", existedAd.getPk()))
                 .andExpect(authenticated().withAuthenticationName(authentication.getName()).withRoles("ADMIN"))
                 .andExpect(status().isNoContent());
 
-        long countAfter = adRepository.count();
-        assertEquals(countBefore - numberOfDeletedItems, countAfter);
+        long adsCountAfter = adRepository.count();
+        long commentCountAfter = commentRepository.count();
+
+        assertEquals(adsCountBefore - numberOfDeletedAds, adsCountAfter);
+        assertEquals(commentsCountBefore - commentsCountForCurrentAd, commentCountAfter);
     }
 
     @DisplayName("Удаление несуществующего объявления авторизованным пользователем.")
