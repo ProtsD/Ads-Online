@@ -1,6 +1,7 @@
 package ru.skypro.homework.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -82,6 +83,12 @@ public class CommentControllerTest {
 
         comments = TestUtils.createComments(MAX_NUMBER_OF_PRE_CREATED_COMMENTS_FOR_SINGLE_AD, users, ads);
         commentRepository.saveAll(comments);
+    }
+    @AfterEach
+    void afterEach() {
+        commentRepository.deleteAll();
+        adRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @DisplayName("Проверка работоспособности соединения с БД PostgreSQL.")
