@@ -1,6 +1,7 @@
 package ru.skypro.homework.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.javafaker.Faker;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,12 +20,14 @@ import ru.skypro.homework.HomeworkApplication;
 import ru.skypro.homework.controller.util.TestUtils;
 import ru.skypro.homework.dto.comment.Comment;
 import ru.skypro.homework.dto.comment.CreateOrUpdateComment;
+import ru.skypro.homework.dto.user.Role;
 import ru.skypro.homework.entity.AdEntity;
 import ru.skypro.homework.entity.CommentEntity;
 import ru.skypro.homework.entity.UserEntity;
 import ru.skypro.homework.mapper.CommentMapper;
 import ru.skypro.homework.repository.AdRepository;
 import ru.skypro.homework.repository.CommentRepository;
+import ru.skypro.homework.repository.ImageRepository;
 import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.ImageService;
 
@@ -64,6 +67,8 @@ public class CommentControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private ImageRepository imageRepository;
     private final static int TOTAL_NUMBER_OF_PRE_CREATED_USERS = 50;
     private final static int TOTAL_NUMBER_OF_PRE_CREATED_ADS = 10;
     private final static int MAX_NUMBER_OF_PRE_CREATED_COMMENTS_FOR_SINGLE_AD = 10;
@@ -89,6 +94,7 @@ public class CommentControllerTest {
         commentRepository.deleteAll();
         adRepository.deleteAll();
         userRepository.deleteAll();
+        imageRepository.deleteAll();
     }
 
     @DisplayName("Проверка работоспособности соединения с БД PostgreSQL.")
@@ -102,7 +108,9 @@ public class CommentControllerTest {
     @DisplayName("Получение всех комментариев под объявлением неавторизованным пользователем")
     @Test
     void getAllCommentsForAdTestNegative() throws Exception {
-        mockMvc.perform(get("/ads/1/comments"))
+        int id = TestUtils.getRandomExistedAd(ads).getPk();
+
+        mockMvc.perform(get("/ads/{id}/comments", id))
                 .andExpect(status().isUnauthorized());
     }
 
@@ -110,12 +118,13 @@ public class CommentControllerTest {
     @Test
     void getAllCommentsForAdTest() throws Exception {
         AdEntity adEntity = TestUtils.getRandomExistedAd(ads);
-        List<Comment> commentList = commentMapper.toCommentList(comments).stream()
-                .filter(a -> a.getAdPk() == adEntity.getPk())
+        List<Comment> commentEntityListWithPkAd = comments.stream()
+                .filter(a -> a.getAdEntity().getPk().equals(adEntity.getPk()))
+                .map(commentMapper::toComment)
                 .collect(Collectors.toList());
         Authentication authentication = TestUtils.createAuthenticationTokenForRandomUser(users);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String json = objectMapper.writeValueAsString(commentMapper.toComments(commentList));
+        String json = objectMapper.writeValueAsString(commentMapper.toComments(commentEntityListWithPkAd));
         mockMvc.perform(get("/ads/{id}/comments", adEntity.getPk()))
                 .andExpect(authenticated().withAuthenticationName(authentication.getName()))
                 .andExpect(status().isOk())
@@ -129,9 +138,8 @@ public class CommentControllerTest {
         Authentication authentication = TestUtils.createAuthenticationTokenForRandomUser(users);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         AdEntity adEntity = TestUtils.getRandomExistedAd(ads);
-        CommentEntity commentEntity = TestUtils.getRandomExistedComment(comments);
         CreateOrUpdateComment createOrUpdateComment = new CreateOrUpdateComment();
-        createOrUpdateComment.setText(commentEntity.getText());
+        createOrUpdateComment.setText("New Text23");
         String json = objectMapper.writeValueAsString(createOrUpdateComment);
         long countFirst = commentRepository.count();
         mockMvc.perform(post("/ads/{id}/comments", adEntity.getPk())
@@ -147,9 +155,8 @@ public class CommentControllerTest {
     @Test
     void createCommentTestNegative() throws Exception {
         AdEntity adEntity = TestUtils.getRandomExistedAd(ads);
-        CommentEntity commentEntity = TestUtils.getRandomExistedComment(comments);
         CreateOrUpdateComment createOrUpdateComment = new CreateOrUpdateComment();
-        createOrUpdateComment.setText(commentEntity.getText());
+        createOrUpdateComment.setText("New Text23");
         String json = objectMapper.writeValueAsString(createOrUpdateComment);
         long countFirst = commentRepository.count();
         mockMvc.perform(post("/ads/{id}/comments", adEntity.getPk())
@@ -191,6 +198,7 @@ public class CommentControllerTest {
         CommentEntity commentEntity = TestUtils.getRandomExistedComment(commentEntityListWithPkAd);
         List<UserEntity> userEntities = users.stream()
                 .filter(a -> !a.getId().equals(commentEntity.getAuthor().getId()))
+                .filter(a -> !a.getRole().equals(Role.ADMIN))
                 .collect(Collectors.toList());
         Authentication authentication = TestUtils.createAuthenticationTokenForRandomUser(userEntities);
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -251,7 +259,7 @@ public class CommentControllerTest {
         Authentication authentication = TestUtils.createAuthenticationTokenForRandomUser(userEntities);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         CreateOrUpdateComment createOrUpdateComment = new CreateOrUpdateComment();
-        createOrUpdateComment.setText(TestUtils.getRandomExistedComment(comments).getText());
+        createOrUpdateComment.setText("New Text23");
         String json = objectMapper.writeValueAsString(createOrUpdateComment);
         commentEntity.setText(createOrUpdateComment.getText());
         String currentComment = objectMapper.writeValueAsString(commentMapper.toComment(commentEntity));
@@ -272,11 +280,12 @@ public class CommentControllerTest {
         CommentEntity commentEntity = TestUtils.getRandomExistedComment(commentEntityListWithPkAd);
         List<UserEntity> userEntities = users.stream()
                 .filter(a -> !a.getId().equals(commentEntity.getAuthor().getId()))
+                .filter(a -> !a.getRole().equals(Role.ADMIN))
                 .collect(Collectors.toList());
         Authentication authentication = TestUtils.createAuthenticationTokenForRandomUser(userEntities);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         CreateOrUpdateComment createOrUpdateComment = new CreateOrUpdateComment();
-        createOrUpdateComment.setText(TestUtils.getRandomExistedComment(comments).getText());
+        createOrUpdateComment.setText("New Text23");
         String json = objectMapper.writeValueAsString(createOrUpdateComment);
         commentEntity.setText(createOrUpdateComment.getText());
         mockMvc.perform(patch("/ads/{adId}/comments/{commentId}", adEntity.getPk(), commentEntity.getPk())

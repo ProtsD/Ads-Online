@@ -34,8 +34,7 @@ public class CommentMapper {
                 .setPk(commentEntity.getPk())
                 .setCreatedAt(commentEntity.getCreatedAt())
                 .setAuthorImage(commentEntity.getAuthor().getImage())
-                .setAuthorFirstName(commentEntity.getAuthor().getFirstName())
-                .setAdPk(commentEntity.getAdEntity().getPk());
+                .setAuthorFirstName(commentEntity.getAuthor().getFirstName());
     }
 
     public Comments toComments(List<Comment> commentList) {
