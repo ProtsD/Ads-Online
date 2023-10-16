@@ -197,4 +197,23 @@ public class TestUtils {
                 securityUserPrincipal.getAuthorities()
         );
     }
+
+    public static Authentication createAuthenticationTokenForRandomUser(List<UserEntity> users) {
+        return createAuthenticationTokenForUser(users.get(new Random().nextInt(users.size())));
+    }
+
+    public static AdEntity getRandomExistedAd(List<AdEntity> ads) {
+        return ads.get(new Random().nextInt(ads.size()));
+    }
+
+    public static int getRandomNonExistentAdId(List<AdEntity> ads) {
+        int randomNonExistentId;
+        List<Integer> allIds = ads.stream().map(AdEntity::getPk).collect(Collectors.toList());
+
+        do {
+            randomNonExistentId = new Random().nextInt(Integer.MAX_VALUE);
+        } while (allIds.contains(randomNonExistentId));
+
+        return randomNonExistentId;
+    }
 }
