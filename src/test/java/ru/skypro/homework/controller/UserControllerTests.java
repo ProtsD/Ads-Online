@@ -1,6 +1,5 @@
 package ru.skypro.homework.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import net.minidev.json.JSONObject;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,19 +18,10 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.skypro.homework.HomeworkApplication;
 import ru.skypro.homework.controller.util.TestUtils;
-import ru.skypro.homework.entity.AdEntity;
-import ru.skypro.homework.entity.CommentEntity;
 import ru.skypro.homework.entity.UserEntity;
-import ru.skypro.homework.mapper.AdMapper;
-import ru.skypro.homework.mapper.UserMapper;
-import ru.skypro.homework.repository.AdRepository;
-import ru.skypro.homework.repository.CommentRepository;
 import ru.skypro.homework.repository.ImageRepository;
 import ru.skypro.homework.repository.UserRepository;
-import ru.skypro.homework.service.ImageService;
-import ru.skypro.homework.service.util.ServiceUtils;
 
-import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,41 +34,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = HomeworkApplication.class)
 @Testcontainers
 @TestMethodOrder(MethodOrderer.MethodName.class)
-//@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
 public class UserControllerTests {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private AdRepository adRepository;
-    @Autowired
-    private CommentRepository commentRepository;
-    @Autowired
     private ImageRepository imageRepository;
-    @Autowired
-    private ImageService imageService;
-    @Autowired
-    private DataSource dataSource;
-    @Autowired
-    private UserMapper userMapper;
-    @Autowired
-    private AdMapper adMapper;
-    @Autowired
-    private ServiceUtils serviceUtils;
-    @Autowired
-    private final ObjectMapper objectMapper = new ObjectMapper();
     @Autowired
     private MockMvc mockMvc;
     @Autowired
     private PasswordEncoder passwordEncoder;
     private final static int TOTAL_NUMBER_OF_PRE_CREATED_USERS = 10;
-    private final static int TOTAL_NUMBER_OF_PRE_CREATED_ADS = 10;
-    private final static int MAX_NUMBER_OF_PRE_CREATED_COMMENTS_FOR_SINGLE_AD = 10;
     private List<UserEntity> users;
-    private List<AdEntity> ads;
-    private List<CommentEntity> comments;
-    private UserEntity admin;
-
     @Container
     private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:alpine");
 
@@ -92,7 +59,6 @@ public class UserControllerTests {
     @BeforeEach
     void beforeEach() throws Exception {
         users = TestUtils.createUniqueUsers(TOTAL_NUMBER_OF_PRE_CREATED_USERS, passwordEncoder);
-        admin = TestUtils.createAdmin(users);
         userRepository.saveAll(users);
     }
 
@@ -306,22 +272,14 @@ public class UserControllerTests {
 
         MockMultipartFile imageFile = new MockMultipartFile("image", "file1.png", MediaType.IMAGE_PNG_VALUE, "mockPseudoValue".getBytes());
 
-//        String byteArr = imageFile.toString();
-//        mockMvc.perform(patch("/users/me/image")
-//                        .contentType(MediaType.IMAGE_PNG_VALUE)
-//                        .content(byteArr)
-//                )
-//                .andExpect(status().isOk());
-
-        mockMvc.perform(
-                        multipart("/users/me/image")
-                                .file(imageFile)
-                                .with(
-                                        request -> {
-                                            request.setMethod("PATCH");
-                                            return request;
-                                        }
-                                )
+        mockMvc.perform(multipart("/users/me/image")
+                        .file(imageFile)
+                        .with(
+                                request -> {
+                                    request.setMethod("PATCH");
+                                    return request;
+                                }
+                        )
                 )
                 .andExpect(status().isOk());
     }
