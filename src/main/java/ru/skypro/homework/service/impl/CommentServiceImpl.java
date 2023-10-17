@@ -58,13 +58,13 @@ public class CommentServiceImpl implements CommentService {
         if (commentRepository.existsById(commentId)) {
             commentRepository.deleteById(commentId);
         } else {
-            throw new NotFoundException("Comments with id="+commentId+" doesn't found.");
+            throw new NotFoundException("Comment with id="+commentId+" doesn't found.");
         }
     }
 
     @Override
     public Comment updateComment(Authentication authentication, Integer adId, Integer commentId, CreateOrUpdateComment createOrUpdateComment) {
-        CommentEntity commentEntity = commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException("Comments with id="+commentId+" doesn't found."));
+        CommentEntity commentEntity = commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException("Comment with id="+commentId+" doesn't found."));
 
         commentEntity.setText(createOrUpdateComment.getText());
         commentEntity = commentRepository.save(commentEntity);
