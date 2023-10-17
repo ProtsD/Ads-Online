@@ -10,6 +10,7 @@ import ru.skypro.homework.entity.UserEntity;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class CommentMapper {
@@ -40,5 +41,11 @@ public class CommentMapper {
         return new Comments()
                 .setCount(commentList.size())
                 .setResults(commentList);
+    }
+    public List<Comment> toCommentList(List<CommentEntity> commentEntities) {
+        if (commentEntities == null) {
+            return null;
+        }
+        return commentEntities.stream().map(this::toComment).collect(Collectors.toList());
     }
 }

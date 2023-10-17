@@ -192,6 +192,12 @@ public class TestUtils {
     public static Authentication createAuthenticationTokenForRandomUser(List<UserEntity> users) {
         return createAuthenticationTokenForUser(users.get(new Random().nextInt(users.size())));
     }
+    public static CommentEntity getRandomExistedComment(List<CommentEntity> commentList){
+        return commentList.get(new Random().nextInt(commentList.size()));
+    }
+    public static UserEntity getRandomUser(List<UserEntity> users){
+        return users.get(new Random().nextInt(users.size()));
+    }
 
     public static AdEntity getRandomExistedAd(List<AdEntity> ads) {
         return ads.get(new Random().nextInt(ads.size()));
