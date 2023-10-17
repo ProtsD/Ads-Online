@@ -21,14 +21,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class TestUtils {
-    public static List<UserEntity> createUniqueUsers(int maxUsers, PasswordEncoder passwordEncoder) {
-        final int usernameMinSize = 6, usernameMaxSize = 32;
-        final int passwordMinSize = 8, passwordMaxSize = 16;
-        final int firstNameMinSize = 2, firstNameMaxSize = 16;
-        final int lastNameMinSize = 2, lastNameMaxSize = 16;
-        final Faker ruFaker = new Faker(new Locale("ru-RU"));
-        final Faker enFaker = new Faker(new Locale("en-US"));
+    static final int usernameMinSize = 6, usernameMaxSize = 32;
+    static final int passwordMinSize = 8, passwordMaxSize = 16;
+    static final int firstNameMinSize = 2, firstNameMaxSize = 16;
+    static final int lastNameMinSize = 2, lastNameMaxSize = 16;
+    static final Faker ruFaker = new Faker(new Locale("ru-RU"));
+    static final Faker enFaker = new Faker(new Locale("en-US"));
 
+    public static List<UserEntity> createUniqueUsers(int maxUsers, PasswordEncoder passwordEncoder) {
         List<UserEntity> users = new ArrayList<>();
 
         List<String> uniqueEmails = Stream
@@ -38,29 +38,10 @@ public class TestUtils {
                 .limit(maxUsers)
                 .collect(Collectors.toList());
 
-        List<String> passwords = Stream
-                .generate(() -> ruFaker.internet().password())
-                .filter(password -> password.length() >= passwordMinSize && password.length() <= passwordMaxSize)
-                .limit(maxUsers)
-                .collect(Collectors.toList());
-
-        List<String> firstNames = Stream
-                .generate(() -> ruFaker.name().firstName())
-                .filter(firstName -> firstName.length() >= firstNameMinSize && firstName.length() <= firstNameMaxSize)
-                .limit(maxUsers)
-                .collect(Collectors.toList());
-
-        List<String> lastNames = Stream
-                .generate(() -> ruFaker.name().lastName())
-                .filter(lastName -> lastName.length() >= lastNameMinSize && lastName.length() <= lastNameMaxSize)
-                .limit(maxUsers)
-                .collect(Collectors.toList());
-
-        List<String> uniquePhones = Stream
-                .generate(() -> ruFaker.phoneNumber().phoneNumber())
-                .distinct()
-                .limit(maxUsers)
-                .collect(Collectors.toList());
+        List<String> passwords = getPasswords(maxUsers);
+        List<String> firstNames = getFirstNames(maxUsers);
+        List<String> lastNames = getLastNames(maxUsers);
+        List<String> uniquePhones = getPhones(maxUsers);
 
         for (int currentUserNumber = 0; currentUserNumber < maxUsers; currentUserNumber++) {
             UserEntity currentUser = new UserEntity()
@@ -78,9 +59,37 @@ public class TestUtils {
         return users;
     }
 
+    public static List<String> getPasswords(int Quantity) {
+        return Stream.generate(() -> ruFaker.internet().password())
+                .filter(password -> password.length() >= passwordMinSize && password.length() <= passwordMaxSize)
+                .limit(Quantity)
+                .collect(Collectors.toList());
+    }
+
+    public static List<String> getFirstNames(int Quantity) {
+        return Stream.generate(() -> ruFaker.name().firstName())
+                .filter(firstName -> firstName.length() >= firstNameMinSize && firstName.length() <= firstNameMaxSize)
+                .limit(Quantity)
+                .collect(Collectors.toList());
+    }
+
+    public static List<String> getLastNames(int Quantity) {
+        return Stream.generate(() -> ruFaker.name().lastName())
+                .filter(lastName -> lastName.length() >= lastNameMinSize && lastName.length() <= lastNameMaxSize)
+                .limit(Quantity)
+                .collect(Collectors.toList());
+    }
+
+    public static List<String> getPhones(int Quantity) {
+        return Stream.generate(() -> ruFaker.phoneNumber().phoneNumber())
+                .distinct()
+                .limit(Quantity)
+                .collect(Collectors.toList());
+    }
     public static UserEntity createAdmin(List<UserEntity> users) {
         int randomUser = new Random().nextInt(users.size());
         users.get(randomUser).setRole(Role.ADMIN);
+
 
         return users.get(randomUser);
     }
@@ -186,6 +195,10 @@ public class TestUtils {
 
     public static AdEntity getRandomExistedAd(List<AdEntity> ads) {
         return ads.get(new Random().nextInt(ads.size()));
+    }
+
+    public static UserEntity getRandomUserFrom(List<UserEntity> users) {
+        return users.get(new Random().nextInt(users.size()));
     }
 
     public static int getRandomNonExistentAdId(List<AdEntity> ads) {
