@@ -1,7 +1,6 @@
 package ru.skypro.homework.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.javafaker.Faker;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,7 +13,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.skypro.homework.HomeworkApplication;
 import ru.skypro.homework.controller.util.TestUtils;
@@ -68,6 +71,8 @@ public class CommentControllerTest {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private ImageRepository imageRepository;
+    @Container
+    private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:alpine");
     private final static int TOTAL_NUMBER_OF_PRE_CREATED_USERS = 50;
     private final static int TOTAL_NUMBER_OF_PRE_CREATED_ADS = 10;
     private final static int MAX_NUMBER_OF_PRE_CREATED_COMMENTS_FOR_SINGLE_AD = 10;
@@ -75,6 +80,13 @@ public class CommentControllerTest {
     private List<AdEntity> ads;
     private List<CommentEntity> comments;
     private UserEntity admin;
+
+    @DynamicPropertySource
+    static void postgresProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgres::getJdbcUrl);
+        registry.add("spring.datasource.username", postgres::getUsername);
+        registry.add("spring.datasource.password", postgres::getPassword);
+    }
 
     @BeforeEach
     void beforeEach() throws Exception {
@@ -88,6 +100,7 @@ public class CommentControllerTest {
         comments = TestUtils.createComments(MAX_NUMBER_OF_PRE_CREATED_COMMENTS_FOR_SINGLE_AD, users, ads);
         commentRepository.saveAll(comments);
     }
+
     @AfterEach
     void afterEach() {
         commentRepository.deleteAll();
@@ -174,9 +187,10 @@ public class CommentControllerTest {
         long countAfter = commentRepository.count();
         assertEquals(countFirst, countAfter);
     }
+
     @DisplayName("Добавление комментария под объявление с плохим запросом авторизированным пользователем")
     @Test
-    void createCommentTestNegativeBadRequest() throws Exception{
+    void createCommentTestNegativeBadRequest() throws Exception {
         Authentication authentication = TestUtils.createAuthenticationTokenForRandomUser(users);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         AdEntity adEntity = TestUtils.getRandomExistedAd(ads);
@@ -192,6 +206,7 @@ public class CommentControllerTest {
         long countAfter = commentRepository.count();
         assertEquals(countFirst, countAfter);
     }
+
     @DisplayName("Удаление своего комментария авторизированным пользователем")
     @Test
     void deleteCommentTest() throws Exception {
@@ -252,9 +267,10 @@ public class CommentControllerTest {
         long countAfter = commentRepository.count();
         assertEquals(countFirst - 1, countAfter);
     }
+
     @DisplayName("Удаление несуществующего комментария авторизованным пользователем")
     @Test
-    void deleteCommentTestIfNotFound() throws Exception{
+    void deleteCommentTestIfNotFound() throws Exception {
         AdEntity adEntity = TestUtils.getRandomExistedAd(ads);
         List<CommentEntity> commentEntityListWithPkAd = comments.stream()
                 .filter(a -> !a.getAdEntity().getPk().equals(adEntity.getPk()))
@@ -295,9 +311,10 @@ public class CommentControllerTest {
                 .andExpect(content().json(currentComment))
                 .andExpect(status().isOk());
     }
+
     @DisplayName("Обновление не своего комментария авторизованным пользователем")
     @Test
-    void updateCommentTestNegative() throws Exception{
+    void updateCommentTestNegative() throws Exception {
         AdEntity adEntity = TestUtils.getRandomExistedAd(ads);
         List<CommentEntity> commentEntityListWithPkAd = comments.stream()
                 .filter(a -> a.getAdEntity().getPk().equals(adEntity.getPk()))
@@ -319,6 +336,7 @@ public class CommentControllerTest {
                 .andExpect(authenticated().withAuthenticationName(authentication.getName()))
                 .andExpect(status().isForbidden());
     }
+
     @DisplayName("Обновление комментария авторизованным пользователем с ролью админ")
     @Test
     void updateCommentTestWithAdminRole() throws Exception {
@@ -341,6 +359,7 @@ public class CommentControllerTest {
                 .andExpect(content().json(currentComment))
                 .andExpect(status().isOk());
     }
+
     @DisplayName("Обновление несуществующего комментария авторизованным пользователем")
     @Test
     void updateCommentTestIfNotFound() throws Exception {
@@ -361,9 +380,10 @@ public class CommentControllerTest {
                 .andExpect(authenticated().withAuthenticationName(authentication.getName()))
                 .andExpect(status().isNotFound());
     }
+
     @DisplayName("")
     @Test
-    void updateCommentTestNegativeBadRequest() throws Exception{
+    void updateCommentTestNegativeBadRequest() throws Exception {
         AdEntity adEntity = TestUtils.getRandomExistedAd(ads);
         List<CommentEntity> commentEntityListWithPkAd = comments.stream()
                 .filter(a -> a.getAdEntity().getPk().equals(adEntity.getPk()))
@@ -378,7 +398,7 @@ public class CommentControllerTest {
         createOrUpdateComment.setText("New");
         String json = objectMapper.writeValueAsString(createOrUpdateComment);
         commentEntity.setText(createOrUpdateComment.getText());
-        String currentComment = objectMapper.writeValueAsString(commentMapper.toComment(commentEntity));
+
         mockMvc.perform(patch("/ads/{adId}/comments/{commentId}", adEntity.getPk(), commentEntity.getPk())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
