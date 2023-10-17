@@ -67,7 +67,7 @@ public class AdServiceImpl implements AdService {
     @Override
     public ExtendedAd getAdInfo(Authentication authentication, Integer id) {
         AdEntity currentAd = adRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("")
+                () -> new NotFoundException("Ad with id=" + id + " doesn't found.")
         );
 
         return adMapper.toExtendedAd(currentAd);
@@ -76,7 +76,7 @@ public class AdServiceImpl implements AdService {
     @Override
     public void deleteAd(Authentication authentication, Integer id) {
         AdEntity currentAd = adRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("")
+                () -> new NotFoundException("Ad with id=" + id + " doesn't found.")
         );
 
         try {
@@ -92,7 +92,7 @@ public class AdServiceImpl implements AdService {
     @Override
     public Ad updateAdInfo(Authentication authentication, Integer id, CreateOrUpdateAd properties) {
         AdEntity currentAd = adRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("")
+                () -> new NotFoundException("Ad with id=" + id + " doesn't found.")
         );
 
         currentAd.setTitle(properties.getTitle())
@@ -119,7 +119,7 @@ public class AdServiceImpl implements AdService {
     @Override
     public String updateAdImage(Authentication authentication, Integer id, MultipartFile image) {
         AdEntity currentAd = adRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("")
+                () -> new NotFoundException("Ad with id=" + id + " doesn't found.")
         );
 
         try {

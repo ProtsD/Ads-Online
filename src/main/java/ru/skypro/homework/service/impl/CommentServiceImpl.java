@@ -35,7 +35,7 @@ public class CommentServiceImpl implements CommentService {
                 .map(commentMapper::toComment)
                 .collect(Collectors.toList());
 
-        if (comments.isEmpty()) throw new NotFoundException();
+        if (comments.isEmpty()) throw new NotFoundException("Comments for Ad with id="+id+" doesn't found.");
 
         return commentMapper.toComments(comments);
     }
@@ -45,7 +45,7 @@ public class CommentServiceImpl implements CommentService {
         CommentEntity result = commentMapper.toNewEntity(
                 createOrUpdateComment,
                 userMapper.toEntity(serviceUtils.getCurrentUser(authentication)),
-                adRepository.findById(id).orElseThrow(() -> new NotFoundException(""))
+                adRepository.findById(id).orElseThrow(() -> new NotFoundException("Comment with id="+id+" doesn't found."))
         );
 
         result = commentRepository.save(result);
@@ -58,13 +58,13 @@ public class CommentServiceImpl implements CommentService {
         if (commentRepository.existsById(commentId)) {
             commentRepository.deleteById(commentId);
         } else {
-            throw new NotFoundException("");
+            throw new NotFoundException("Comment with id="+commentId+" doesn't found.");
         }
     }
 
     @Override
     public Comment updateComment(Authentication authentication, Integer adId, Integer commentId, CreateOrUpdateComment createOrUpdateComment) {
-        CommentEntity commentEntity = commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException(""));
+        CommentEntity commentEntity = commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException("Comment with id="+commentId+" doesn't found."));
 
         commentEntity.setText(createOrUpdateComment.getText());
         commentEntity = commentRepository.save(commentEntity);
