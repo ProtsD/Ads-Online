@@ -120,7 +120,7 @@ public class AdControllerTest {
         userRepository.deleteAll();
     }
 
-    @DisplayName("Проверка работоспособности соединения с БД PostgreSQL.")
+    @DisplayName("Check database connection.")
     @Test
     void testPostgresql() throws SQLException {
         try (Connection conn = dataSource.getConnection()) {
@@ -128,7 +128,7 @@ public class AdControllerTest {
         }
     }
 
-    @DisplayName("Получение всех объявлений неавторизованным пользователем.")
+    @DisplayName("Obtain all ads by unauthorised user.")
     @Test
     void getAllAds_getRequest_withoutAuthorization_thenJsonVariable() throws Exception {
         List<Ad> adList = adMapper.toAdList(ads);
@@ -140,7 +140,7 @@ public class AdControllerTest {
                 .andExpect(content().json(expectedJSON));
     }
 
-    @DisplayName("Получение всех объявлений авторизованным пользователем.")
+    @DisplayName("Obtain all ads by authorised user.")
     @Test
     void getAllAds_getRequest_withAuthorization_thenJsonVariable() throws Exception {
         Authentication authentication = TestUtils.createAuthenticationTokenForRandomUser(users);
@@ -155,7 +155,7 @@ public class AdControllerTest {
                 .andExpect(content().json(expectedJSON));
     }
 
-    @DisplayName("Добавление объявления неавторизованным пользователем.")
+    @DisplayName("Add ads by unauthorised user.")
     @Test
     void addAd_postRequest_withoutAuthorization_thenUnauthorized() throws Exception {
         CreateOrUpdateAd newAd = new CreateOrUpdateAd().setTitle("Title 001").setPrice(123).setDescription("Description 123");
@@ -174,7 +174,7 @@ public class AdControllerTest {
         assertEquals(countBefore, countAfter);
     }
 
-    @DisplayName("Добавление объявления авторизованным пользователем.")
+    @DisplayName("Add ad by authorised user.")
     @Test
     void addAd_postRequest_withAuthorization_thenJsonVariable() throws Exception {
         Authentication authentication = TestUtils.createAuthenticationTokenForRandomUser(users);
@@ -196,7 +196,7 @@ public class AdControllerTest {
         assertEquals(countBefore + numberOfCreatedItems, countAfter);
     }
 
-    @DisplayName("Добавление объявления с некорректными данными авторизованным пользователем.")
+    @DisplayName("Add ad with incorrect data by authorised user.")
     @Test
     void addAd_postRequest_withAuthorization_withIncorrectData_thenBadRequest() throws Exception {
         Authentication authentication = TestUtils.createAuthenticationTokenForRandomUser(users);
@@ -218,7 +218,7 @@ public class AdControllerTest {
         assertEquals(countBefore, countAfter);
     }
 
-    @DisplayName("Получение информации об объявлении неавторизованным пользователем.")
+    @DisplayName("Obtain ad data by unauthorised user.")
     @Test
     void getAdInfo_withoutAuthorization_thenUnauthorized() throws Exception {
         int existedAdId = TestUtils.getRandomExistedAd(ads).getPk();
@@ -229,7 +229,7 @@ public class AdControllerTest {
 
     }
 
-    @DisplayName("Получение информации об объявлении авторизованным пользователем.")
+    @DisplayName("Obtain ad data by authorised user.")
     @Test
     void getAdInfo_withAuthorization_thenJsonVariable() throws Exception {
         Authentication authentication = TestUtils.createAuthenticationTokenForRandomUser(users);
@@ -245,7 +245,7 @@ public class AdControllerTest {
                 .andExpect(content().json(expectedAdJsonValue));
     }
 
-    @DisplayName("Получение информации о несуществующем объявлении авторизованным пользователем.")
+    @DisplayName("Obtain non-existent ad data by authorised user.")
     @Test
     void getAdInfo_withAuthorization_thenNotFound() throws Exception {
         Authentication authentication = TestUtils.createAuthenticationTokenForRandomUser(users);
@@ -259,7 +259,7 @@ public class AdControllerTest {
 
     }
 
-    @DisplayName("Удаление объявления неавторизованным пользователем.")
+    @DisplayName("Delete ad by unauthorized user.")
     @Test
     void deleteAd_withoutAuthorization_thenUnauthorized() throws Exception {
         AdEntity existedAd = TestUtils.getRandomExistedAd(ads);
@@ -274,7 +274,7 @@ public class AdControllerTest {
         assertEquals(countBefore, countAfter);
     }
 
-    @DisplayName("Удаление своего объявления авторизованным пользователем.")
+    @DisplayName("Delete their own ad by unauthorized user.")
     @Test
     void deleteAd_withAuthorization_ownAd_thenNoContent() throws Exception {
         AdEntity existedAd = TestUtils.getRandomExistedAd(ads);
@@ -303,7 +303,7 @@ public class AdControllerTest {
         assertEquals(commentsCountBefore - commentsCountForCurrentAd, commentCountAfter);
     }
 
-    @DisplayName("Удаление чужого объявления авторизованным пользователем.")
+    @DisplayName("The unauthorized user cannot delete someone else's ad.")
     @Test
     void deleteAd_withAuthorization_someoneElseAd_thenForbidden() throws Exception {
         AdEntity existedAd = TestUtils.getRandomExistedAd(ads);
@@ -326,7 +326,7 @@ public class AdControllerTest {
         assertEquals(countBefore, countAfter);
     }
 
-    @DisplayName("Удаление чужого объявления авторизованным пользователем с ролью администратора.")
+    @DisplayName("An authorized user with the role of administrator can delete someone else's ad.")
     @Test
     void deleteAd_withAuthorization_someoneElseAd_withAdminRole_thenNoContent() throws Exception {
         Authentication authentication = TestUtils.createAuthenticationTokenForUser(admin);
@@ -359,7 +359,7 @@ public class AdControllerTest {
         assertEquals(commentsCountBefore - commentsCountForCurrentAd, commentCountAfter);
     }
 
-    @DisplayName("Удаление несуществующего объявления авторизованным пользователем.")
+    @DisplayName("An authorized user cannot delete a nonexistent ad.")
     @Test
     void deleteAd_withAuthorization_nonExistentAd_thenNotFound() throws Exception {
         Authentication authentication = TestUtils.createAuthenticationTokenForRandomUser(users);
@@ -377,7 +377,7 @@ public class AdControllerTest {
         assertEquals(countBefore, countAfter);
     }
 
-    @DisplayName("Удаление несуществующего объявления авторизованным пользователем с ролью администратора.")
+    @DisplayName("An authorized user with administrator privileges cannot delete a nonexistent ad.")
     @Test
     void deleteAd_withAuthorization_nonExistentAd_withAdminRole_thenNotFound() throws Exception {
         Authentication authentication = TestUtils.createAuthenticationTokenForUser(admin);
@@ -395,7 +395,7 @@ public class AdControllerTest {
         assertEquals(countBefore, countAfter);
     }
 
-    @DisplayName("Обновление информации об объявлении неавторизованным пользователем.")
+    @DisplayName("Update ad data by unauthorised user.")
     @Test
     void updateAdInfo_withoutAuthorization_thenUnauthorized() throws Exception {
         CreateOrUpdateAd updateAd = new CreateOrUpdateAd().setTitle("Title 001").setPrice(123).setDescription("Description 123");
@@ -410,7 +410,7 @@ public class AdControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    @DisplayName("Обновление информации о своём объявлении авторизованным пользователем.")
+    @DisplayName("Update their own ad by authorized user.")
     @Test
     void updateAdInfo_withAuthorization_ownAd_thenJsonVariable() throws Exception {
         CreateOrUpdateAd updateAd = new CreateOrUpdateAd().setTitle("Title 001").setPrice(123).setDescription("Description 123");
@@ -436,7 +436,7 @@ public class AdControllerTest {
                 .andExpect(status().isOk());
     }
 
-    @DisplayName("Обновление информации о чужом объявлении авторизованным пользователем.")
+    @DisplayName("Update someone else's ad by authorized user.")
     @Test
     void updateAdInfo_withAuthorization_someoneElseAd_thenForbidden() throws Exception {
         AdEntity existedAd = TestUtils.getRandomExistedAd(ads);
@@ -458,7 +458,7 @@ public class AdControllerTest {
                 .andExpect(status().isForbidden());
     }
 
-    @DisplayName("Обновление информации о чужом объявлении авторизованным пользователем с ролью администратора.")
+    @DisplayName("Update someone else's ad by authorized admin.")
     @Test
     void updateAdInfo_withAuthorization_someoneElseAd_withAdminRole_thenJsonVariable() throws Exception {
         CreateOrUpdateAd updateAd = new CreateOrUpdateAd().setTitle("Title 001").setPrice(123).setDescription("Description 123");
@@ -490,7 +490,7 @@ public class AdControllerTest {
                 .andExpect(status().isOk());
     }
 
-    @DisplayName("Обновление информации о несуществующем объявлении авторизованным пользователем.")
+    @DisplayName("Update nonexistent ad by authorized user.")
     @Test
     void updateAdInfo_withAuthorization_nonExistentAd_thenNotFound() throws Exception {
         Authentication authentication = TestUtils.createAuthenticationTokenForRandomUser(users);
@@ -508,7 +508,7 @@ public class AdControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-    @DisplayName("Обновление информации о несуществующем объявлении авторизованным пользователем с ролью администратора.")
+    @DisplayName("Update nonexistent ad by authorized admin.")
     @Test
     void updateAdInfo_withAuthorization_nonExistentAd_withAdminRole_thenNotFound() throws Exception {
         Authentication authentication = TestUtils.createAuthenticationTokenForUser(admin);
@@ -526,7 +526,7 @@ public class AdControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-    @DisplayName("Обновление информации о своём объявлении некорректными данными авторизованным пользователем.")
+    @DisplayName("Update with wrong data their own ad by authorized admin.")
     @Test
     void updateAdInfo_withAuthorization_ownAd_withIncorrectData_thenBadRequest() throws Exception {
         CreateOrUpdateAd newIncorrectAd = new CreateOrUpdateAd().setTitle("Title").setPrice(0).setDescription("Desc");
@@ -544,7 +544,7 @@ public class AdControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    @DisplayName("Получение объявлений авторизованного пользователя.")
+    @DisplayName("Obtain ads by authorized user.")
     @Test
     void getCurrentUserAds_withAuthorization_thenJsonVariable() throws Exception {
         UserEntity randomUserWithAds = ads.get(new Random().nextInt(ads.size())).getAuthor();
@@ -565,8 +565,7 @@ public class AdControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
     }
-
-    @DisplayName("Получение объявлений авторизованного пользователя неавторизованным пользователем.")
+    @DisplayName("Obtain ads of authorised user by authorized user.")
     @Test
     void getCurrentUserAds_withoutAuthorization_thenUnauthorized() throws Exception {
         mockMvc.perform(get("/ads/me"))
@@ -574,7 +573,7 @@ public class AdControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    @DisplayName("Обновление картинки объявления неавторизованным пользователем.")
+    @DisplayName("Update ad picture by unauthorized user.")
     @Test
     void updateAdImage_withoutAuthorization_thenUnauthorized() throws Exception {
         AdEntity existedAd = TestUtils.getRandomExistedAd(ads);
@@ -593,8 +592,7 @@ public class AdControllerTest {
                 .andExpect(unauthenticated())
                 .andExpect(status().isUnauthorized());
     }
-
-    @DisplayName("Обновление картинки своего объявления авторизованным пользователем.")
+    @DisplayName("Update picture their own ad by authorized user.")
     @Test
     void updateAdImage_withAuthorization_ownAd_thenJsonVariable() throws Exception {
         AdEntity existedAd = TestUtils.getRandomExistedAd(ads);
