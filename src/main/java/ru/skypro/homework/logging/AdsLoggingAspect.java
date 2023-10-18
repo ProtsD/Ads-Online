@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Aspect
 public class AdsLoggingAspect {
-    @Pointcut("within(ru.skypro.homework.service.impl.*)")
+    @Pointcut("within(ru.skypro.homework.service.impl.*) || within(ru.skypro.homework.security.SecurityAnnotationMethods)")
     public void adsLogging() {
     }
 
