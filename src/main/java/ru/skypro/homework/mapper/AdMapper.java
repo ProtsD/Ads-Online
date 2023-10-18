@@ -7,6 +7,7 @@ import ru.skypro.homework.dto.ads.CreateOrUpdateAd;
 import ru.skypro.homework.dto.ads.ExtendedAd;
 import ru.skypro.homework.entity.AdEntity;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,7 +40,7 @@ public class AdMapper {
 
     public List<Ad> toAdList(List<AdEntity> adEntities) {
         if (adEntities == null) {
-            return null;
+            return Collections.emptyList();
         }
         return adEntities.stream().map(this::toAd).collect(Collectors.toList());
     }
