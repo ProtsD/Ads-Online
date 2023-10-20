@@ -12,6 +12,7 @@ import ru.skypro.homework.dto.user.UpdateUser;
 import ru.skypro.homework.dto.user.User;
 import ru.skypro.homework.entity.ImageEntity;
 import ru.skypro.homework.entity.UserEntity;
+import ru.skypro.homework.exception.ForbiddenException;
 import ru.skypro.homework.exception.UnauthorizedException;
 import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.repository.UserRepository;
@@ -39,9 +40,8 @@ public class UserServiceImpl implements UserService {
             currentUser.setPassword(passwordEncoder.encode(newPassword.getNewPassword()));
             userRepository.save(currentUser);
         } else {
-            throw new UnauthorizedException();
+            throw new ForbiddenException("Wrong password");
         }
-
     }
 
     @Override
