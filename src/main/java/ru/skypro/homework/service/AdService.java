@@ -16,7 +16,7 @@ public interface AdService {
     Ads getAllAds();
 
     /**
-     * Saves s new ad
+     * Saves a new ad
      *
      * @param authentication the currently authenticated principal, or an authentication request token.
      * @param properties     properties for new ad
