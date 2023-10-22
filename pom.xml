@@ -20,6 +20,7 @@
   <properties>
     <java.version>11</java.version>
     <testcontainers.version>1.18.3</testcontainers.version>
+    <springdoc-version>1.7.0</springdoc-version>
   </properties>
 
   <dependencies>
@@ -32,11 +33,6 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-jpa</artifactId>
     </dependency>
-<!--    <dependency>-->
-<!--      <groupId>org.postgresql</groupId>-->
-<!--      <artifactId>postgresql</artifactId>-->
-<!--      <scope>runtime</scope>-->
-<!--    </dependency>-->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-security</artifactId>
@@ -90,6 +86,11 @@
       <artifactId>postgresql</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-ui</artifactId>
+      <version>${springdoc-version}</version>
+    </dependency>
   </dependencies>
 
   <dependencyManagement>
@@ -122,8 +123,8 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
             <configuration>
-                <source>11</source>
-                <target>11</target>
+                <source>${java.version}</source>
+                <target>${java.version}</target>
             </configuration>
         </plugin>
     </plugins>
