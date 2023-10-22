@@ -28,7 +28,7 @@ import javax.validation.Valid;
 public class UserController {
     private final UserService userService;
 
-    @Operation(summary = "Обновление пароля", description = "", tags = {"Пользователи"})
+    @Operation(summary = "Обновление пароля", tags = {"Пользователи"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
@@ -40,7 +40,7 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "Получение информации об авторизованном пользователе", description = "", tags={ "Пользователи" })
+    @Operation(summary = "Получение информации об авторизованном пользователе", tags={ "Пользователи" })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = User.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized") })
@@ -52,7 +52,7 @@ public class UserController {
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .body(user);
     }
-    @Operation(summary = "Обновление информации об авторизованном пользователе", description = "", tags={ "Пользователи" })
+    @Operation(summary = "Обновление информации об авторизованном пользователе", tags={ "Пользователи" })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = UpdateUser.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized") })
@@ -64,7 +64,7 @@ public class UserController {
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .body(updateUserReturn);
     }
-    @Operation(summary = "Обновление аватара авторизованного пользователя", description = "", tags={ "Пользователи" })
+    @Operation(summary = "Обновление аватара авторизованного пользователя", tags={ "Пользователи" })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "401", description = "Unauthorized") })
