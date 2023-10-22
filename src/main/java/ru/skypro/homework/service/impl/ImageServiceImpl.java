@@ -16,7 +16,7 @@ public class ImageServiceImpl implements ImageService {
     public ImageEntity getImage(Integer id) {
         return imageRepository.findById(id)
                 .orElseThrow(
-                        () -> new NotFoundException("")
+                        () -> new NotFoundException("Image with id=" + id + " doesn't found.")
                 );
     }
 
@@ -39,7 +39,7 @@ public class ImageServiceImpl implements ImageService {
             imageEntity.setImage(image);
             imageEntity = imageRepository.save(imageEntity);
         } else {
-            throw new NotFoundException("");
+            throw new NotFoundException("Image with id=" + id + " doesn't found.");
         }
 
         return imageEntity;
