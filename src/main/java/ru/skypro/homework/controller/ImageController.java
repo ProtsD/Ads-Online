@@ -1,5 +1,10 @@
 package ru.skypro.homework.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -14,6 +19,14 @@ import ru.skypro.homework.service.ImageService;
 public class ImageController {
     private final ImageService imageService;
 
+    @Operation(summary = "Получение изображения", tags = {"Изображения"})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok", content = {
+                    @Content(mediaType = MediaType.IMAGE_PNG_VALUE, schema = @Schema(type = "string", format = "byte")),
+                    @Content(mediaType = MediaType.IMAGE_JPEG_VALUE, schema = @Schema(type = "string", format = "byte")),
+                    @Content(mediaType = MediaType.IMAGE_GIF_VALUE, schema = @Schema(type = "string", format = "byte"))}),
+            @ApiResponse(responseCode = "404", description = "Not found")}
+    )
     @GetMapping("/{id}")
     public ResponseEntity<byte[]> getImage(@PathVariable(name = "id") Integer id) {
         byte[] image = imageService.getImage(id).getImage();
