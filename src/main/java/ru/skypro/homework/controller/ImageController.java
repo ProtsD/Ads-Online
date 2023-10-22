@@ -20,7 +20,7 @@ public class ImageController {
 
     @Operation(summary = "Получение изображения", tags = {"Изображения"})
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Created", content = {
+            @ApiResponse(responseCode = "200", description = "Ok", content = {
                     @Content(mediaType = MediaType.IMAGE_PNG_VALUE),
                     @Content(mediaType = MediaType.IMAGE_JPEG_VALUE),
                     @Content(mediaType = MediaType.IMAGE_GIF_VALUE)}),
